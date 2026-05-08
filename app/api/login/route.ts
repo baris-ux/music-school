@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
-import logger from "@/lib/logger";
 
 const SESSION_COOKIE = "session_v3";
 
@@ -12,7 +11,7 @@ export async function POST(request: Request) {
     const password = String(formData.get("password") || "");
 
     if (!email || !password) {
-      logger.warn({ email }, "Tentative de connexion avec champs manquants");
+      console.warn("Tentative de connexion avec champs manquants", { email });
       return NextResponse.json(
         { error: "Email et mot de passe requis." },
         { status: 400 }
@@ -24,7 +23,7 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
-      logger.warn({ email }, "Tentative de connexion avec email inconnu");
+      console.warn("Tentative de connexion avec email inconnu", { email });
       return NextResponse.json(
         { error: "Identifiants invalides." },
         { status: 401 }
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
     }
 
     if (!user.passwordHash) {
-      logger.warn({ email }, "Tentative de connexion sur un compte non activé");
+      console.warn("Tentative de connexion sur un compte non activé", { email });
       return NextResponse.json(
         { error: "Compte non activé. Vérifiez votre email pour activer votre compte." },
         { status: 401 }
@@ -42,7 +41,7 @@ export async function POST(request: Request) {
     const isValidPassword = await argon2.verify(user.passwordHash, password);
 
     if (!isValidPassword) {
-      logger.warn({ email }, "Tentative de connexion avec mauvais mot de passe");
+      console.warn("Tentative de connexion avec mauvais mot de passe", { email });
       return NextResponse.json(
         { error: "Identifiants invalides." },
         { status: 401 }
@@ -71,7 +70,7 @@ export async function POST(request: Request) {
     return response;
   } catch (error) {
 
-    logger.error({ error }, "Erreur inattendue lors de la connexion");
+    console.error("Erreur inattendue lors de la connexion", error);
 
     return NextResponse.json(
       { error: "Une erreur est survenue." },

@@ -1,6 +1,5 @@
 "use server";
 
-import logger from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Stripe from "stripe";
@@ -99,7 +98,7 @@ export async function createOrder(
     sessionUrl = session.url;
   } catch (error) {
 
-    logger.error({ error }, "Erreur inattendue lors de la création de la commande");
+    console.error("Erreur inattendue lors de la création de la commande", error);
 
     return {
       error:

@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { randomUUID  } from "crypto";
 import { resend } from "@/lib/email";
 import { generateTicketPdf } from "@/lib/ticket-pdf";
-import logger from "@/lib/logger";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover",
@@ -31,7 +30,7 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (error) {
-    logger.error({ error }, "Erreur de signature webhook Stripe");
+    console.error("Erreur de signature webhook Stripe", error);
 
     return NextResponse.json(
       { error: "Signature webhook invalide." },
@@ -45,7 +44,7 @@ export async function POST(req: Request) {
       const orderId = session.metadata?.orderId;
 
       if (!orderId) {
-        logger.error({ }, "orderId absent dans les metadata Stripe");
+        console.error("orderId absent dans les metadata Stripe");
 
         return NextResponse.json(
           { error: "orderId absent des metadata." },
@@ -69,7 +68,7 @@ export async function POST(req: Request) {
       }
 
       if (order.status === "PAID" && order.tickets.length > 0) {
-        logger.info({ orderId }, "Commande déjà traitée, ignorée");
+        console.log("Commande déjà traitée, ignorée", { orderId });
         return NextResponse.json({ received: true }, { status: 200 });
       }
 
@@ -126,12 +125,12 @@ export async function POST(req: Request) {
         });
       }
 
-      logger.info({ orderId }, "Commande marquée PAID et ticket créé");
+      console.log("Commande marquée PAID et ticket créé", { orderId });
     }
 
     return NextResponse.json({ received: true }, { status: 200 });
   } catch (error) {
-    logger.error({ error }, "Erreur inattendue lors du traitement webhook Stripe");
+    console.error("Erreur inattendue lors du traitement webhook Stripe", error);
 
     return NextResponse.json(
       { error: "Erreur pendant le traitement du webhook." },
