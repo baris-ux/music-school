@@ -2,11 +2,15 @@
 
 import { useState } from "react";
 import { soumettreInscription } from "./actions";
+import { useLang } from "@/app/context/LangContext";
+import { translations } from "@/lib/translations";
 
 type Course = { id: string; title: string };
 
 export default function InscriptionForm({ cours }: { cours: Course[] }) {
   const [isParent, setIsParent] = useState(false);
+  const { lang } = useLang();
+  const t = translations[lang].inscription;
 
   return (
     <form
@@ -16,13 +20,13 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
       {/* Informations de l'étudiant */}
       <div>
         <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
-          Informations de l'étudiant
+          {t.section_student}
         </p>
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label htmlFor="firstName" className="text-sm font-medium text-slate-900">
-                Prénom <span className="text-red-500">*</span>
+                {t.first_name} <span className="text-red-500">*</span>
               </label>
               <input
                 id="firstName"
@@ -34,7 +38,7 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
             </div>
             <div className="space-y-1.5">
               <label htmlFor="lastName" className="text-sm font-medium text-slate-900">
-                Nom <span className="text-red-500">*</span>
+                {t.last_name} <span className="text-red-500">*</span>
               </label>
               <input
                 id="lastName"
@@ -46,7 +50,6 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
             </div>
           </div>
 
-          {/* Case à cocher parent */}
           <label className="flex cursor-pointer items-center gap-3">
             <input
               type="checkbox"
@@ -55,9 +58,7 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
               onChange={(e) => setIsParent(e.target.checked)}
               className="h-4 w-4 rounded border-slate-300"
             />
-            <span className="text-sm text-slate-900">
-              Je m'inscris pour un enfant / je suis le parent ou tuteur
-            </span>
+            <span className="text-sm text-slate-900">{t.is_parent}</span>
           </label>
         </div>
       </div>
@@ -66,12 +67,12 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
       {isParent && (
         <div>
           <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Informations du parent / tuteur
+            {t.section_parent}
           </p>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label htmlFor="parentFirstName" className="text-sm font-medium text-slate-900">
-                Prénom du parent <span className="text-red-500">*</span>
+                {t.parent_first_name} <span className="text-red-500">*</span>
               </label>
               <input
                 id="parentFirstName"
@@ -83,7 +84,7 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
             </div>
             <div className="space-y-1.5">
               <label htmlFor="parentLastName" className="text-sm font-medium text-slate-900">
-                Nom du parent <span className="text-red-500">*</span>
+                {t.parent_last_name} <span className="text-red-500">*</span>
               </label>
               <input
                 id="parentLastName"
@@ -100,17 +101,15 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
       {/* Coordonnées de contact */}
       <div>
         <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
-          Coordonnées de contact
+          {t.section_contact}
         </p>
         <div className="space-y-4">
           <div className="space-y-1.5">
             <label htmlFor="email" className="text-sm font-medium text-slate-900">
-              Adresse e-mail <span className="text-red-500">*</span>
+              {t.email} <span className="text-red-500">*</span>
             </label>
             <p className="text-xs text-slate-500">
-              {isParent
-                ? "Adresse email du parent — le lien d'activation sera envoyé ici."
-                : "Votre adresse email — le lien d'activation sera envoyé ici."}
+              {isParent ? t.email_hint_parent : t.email_hint}
             </p>
             <input
               id="email"
@@ -124,7 +123,7 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
 
           <div className="space-y-1.5">
             <label htmlFor="phoneNumber" className="text-sm font-medium text-slate-900">
-              Téléphone
+              {t.phone}
             </label>
             <input
               id="phoneNumber"
@@ -140,7 +139,7 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
       {/* Cours souhaités */}
       <div className="space-y-1.5">
         <label className="text-sm font-medium text-slate-900">
-          Cours souhaités <span className="text-red-500">*</span>
+          {t.courses} <span className="text-red-500">*</span>
         </label>
         <div className="space-y-2 rounded-xl border border-slate-300 bg-white p-4">
           {cours.map((course) => (
@@ -160,13 +159,13 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
       {/* Message */}
       <div className="space-y-1.5">
         <label htmlFor="message" className="text-sm font-medium text-slate-900">
-          Message (optionnel)
+          {t.message}
         </label>
         <textarea
           id="message"
           name="message"
           rows={4}
-          placeholder="Niveau, questions..."
+          placeholder={t.message_placeholder}
           className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-slate-950 placeholder:text-slate-600 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-300"
         />
       </div>
@@ -175,7 +174,7 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
         type="submit"
         className="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
       >
-        Envoyer ma demande
+        {t.submit}
       </button>
     </form>
   );
