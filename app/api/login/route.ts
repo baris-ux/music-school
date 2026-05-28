@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
-
-const SESSION_COOKIE = "session_v3";
+import { getIronSession } from "iron-session";
+import { sessionOptions, type SessionUser } from "@/lib/session";
 
 export async function POST(request: Request) {
   try {
@@ -48,30 +48,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const sessionPayload = JSON.stringify({
-      userId: user.id,
-      role: user.role,
-      email: user.email,
-    });
-
     const response = NextResponse.json({
       success: true,
       role: user.role,
     });
 
-    response.cookies.set(SESSION_COOKIE, sessionPayload, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-    });
+    const session = await getIronSession<{ user?: SessionUser }>(response.cookies, sessionOptions);
+    session.user = { userId: user.id, role: user.role, email: user.email };
+    await session.save();
 
     return response;
   } catch (error) {
-
     console.error("Erreur inattendue lors de la connexion", error);
-
     return NextResponse.json(
       { error: "Une erreur est survenue." },
       { status: 500 }

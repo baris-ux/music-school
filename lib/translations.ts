@@ -220,6 +220,8 @@ export const translations = {
       cta: "Kayıt olun",
       question: "Ücretler hakkında sorunuz mu var?",
       contact_us: "Bize ulaşın",
+      per_session_unit: "/ ders",   
+      monthly_unit: "/ ay",   
     },
   },
 };
