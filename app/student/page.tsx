@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { getSignedResourceUrl } from "@/app/admin/ressources/actions";
+import SessionCalendar from "./SessionCalendar";
 
 import { revalidatePath } from "next/cache";
 
@@ -63,6 +64,16 @@ export default async function StudentPage() {
     }))
   );
 
+  const upcomingSessions = await prisma.session.findMany({
+    where: {
+      courseId: { in: student.enrollments.map((e) => e.courseId) },
+      startsAt: { gte: new Date() },
+      status: "PLANNED",
+    },
+    include: { course: true },
+    orderBy: { startsAt: "asc" },
+  });
+
   return (
     <div className="space-y-8">
       <div>
@@ -70,6 +81,20 @@ export default async function StudentPage() {
         <p className="mt-1 text-sm text-slate-700">
           Bienvenue {student.firstName} {student.lastName}.
         </p>
+      </div>
+
+      <div className="rounded-2xl border border-slate-300 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-slate-950">Mes prochaines séances</h2>
+        <div className="mt-4">
+          <SessionCalendar
+            sessions={upcomingSessions.map((s) => ({
+              id: s.id,
+              startsAt: s.startsAt.toISOString(),
+              endsAt: s.endsAt.toISOString(),
+              course: { title: s.course.title },
+            }))}
+          />
+        </div>
       </div>
 
       <div className="rounded-2xl border border-slate-300 bg-white p-6 shadow-sm">
