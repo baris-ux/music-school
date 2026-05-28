@@ -8,9 +8,28 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(_: Request, { params }: RouteContext) {
+export async function GET(request: Request, { params }: RouteContext) {
   try {
     const { qrCode } = await params;
+
+    const scanToken = new URL(request.url).searchParams.get("scanToken");
+    if (!scanToken) {
+      return NextResponse.json(
+        { success: false, status: "UNAUTHORIZED", message: "Token de scan manquant." },
+        { status: 401 }
+      );
+    }
+
+    const tokenRecord = await prisma.scanToken.findUnique({
+      where: { token: scanToken },
+    });
+
+    if (!tokenRecord || tokenRecord.expiresAt < new Date()) {
+      return NextResponse.json(
+        { success: false, status: "UNAUTHORIZED", message: "Token de scan invalide ou expiré." },
+        { status: 401 }
+      );
+    }
 
     const ticket = await prisma.ticket.findUnique({
       where: { qrCode },
@@ -22,12 +41,15 @@ export async function GET(_: Request, { params }: RouteContext) {
 
     if (!ticket) {
       return NextResponse.json(
-        {
-          success: false,
-          status: "INVALID",
-          message: "Billet introuvable.",
-        },
+        { success: false, status: "INVALID", message: "Billet introuvable." },
         { status: 404 }
+      );
+    }
+
+    if (ticket.eventId !== tokenRecord.eventId) {
+      return NextResponse.json(
+        { success: false, status: "INVALID", message: "Ce billet n'appartient pas à cet événement." },
+        { status: 403 }
       );
     }
 

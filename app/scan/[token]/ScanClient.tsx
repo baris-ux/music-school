@@ -21,7 +21,7 @@ const COLORS: Record<Result, string> = {
   already_used: "border-yellow-500 bg-yellow-900",
 };
 
-export default function ScanClient() {
+export default function ScanClient({ scanToken }: { scanToken: string }) {
   const [result, setResult] = useState<Result>("idle");
   const [info, setInfo] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
@@ -55,7 +55,7 @@ export default function ScanClient() {
 
     try {
       const res = await fetch(
-        `/api/ticket/validate/${encodeURIComponent(qrCode)}`
+        `/api/ticket/validate/${encodeURIComponent(qrCode)}?scanToken=${encodeURIComponent(scanToken)}`
       );
       const data = await res.json();
 

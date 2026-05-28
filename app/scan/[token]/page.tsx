@@ -27,7 +27,7 @@ export default async function ScanPage({
           </h1>
           <p className="text-sm text-slate-400 mt-1">Contrôle des billets</p>
         </div>
-        <ScanClient />
+        <ScanClient scanToken={token} />
       </div>
     </div>
   );
