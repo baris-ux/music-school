@@ -23,6 +23,7 @@ export async function deleteStudent(formData: FormData) {
     prisma.attendance.deleteMany({ where: { studentId: id } }),
     prisma.enrollment.deleteMany({ where: { studentId: id } }),
     prisma.student.delete({ where: { id } }),
+    prisma.inscriptionRequest.deleteMany({ where: { email: student.user.email } }),
     prisma.user.delete({ where: { id: student.user.id } }),
   ]);
 
