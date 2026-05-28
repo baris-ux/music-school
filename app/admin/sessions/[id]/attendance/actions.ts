@@ -73,11 +73,17 @@ export async function saveAttendance(
           data: { balance: { increment: 1000 } },
         });
       } else if (wasPresent && !isNowPresent) {
-        // N'est plus PRESENT → -1000 centimes
-        await prisma.student.update({
+        // N'est plus PRESENT → -1000 centimes, sans descendre sous 0
+        const student = await prisma.student.findUnique({
           where: { id: record.studentId },
-          data: { balance: { decrement: 1000 } },
+          select: { balance: true },
         });
+        if (student && student.balance >= 1000) {
+          await prisma.student.update({
+            where: { id: record.studentId },
+            data: { balance: { decrement: 1000 } },
+          });
+        }
       }
     })
   );

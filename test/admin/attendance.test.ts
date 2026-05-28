@@ -5,7 +5,7 @@ vi.mock("@/lib/prisma", () => ({
     session: { findUnique: vi.fn() },
     enrollment: { findMany: vi.fn() },
     attendance: { findUnique: vi.fn(), upsert: vi.fn() },
-    student: { update: vi.fn() },
+    student: { findUnique: vi.fn(), update: vi.fn() },
   },
 }));
 
@@ -20,6 +20,7 @@ const mockFindSession = vi.mocked(prisma.session.findUnique);
 const mockFindEnrollments = vi.mocked(prisma.enrollment.findMany);
 const mockFindAttendance = vi.mocked(prisma.attendance.findUnique);
 const mockUpsertAttendance = vi.mocked(prisma.attendance.upsert);
+const mockFindStudent = vi.mocked(prisma.student.findUnique);
 const mockUpdateStudent = vi.mocked(prisma.student.update);
 
 describe("getSessionWithAttendance", () => {
@@ -58,9 +59,10 @@ describe("saveAttendance", () => {
     );
   });
 
-  it("décrémente le solde si un étudiant passe de PRESENT à ABSENT", async () => {
+  it("décrémente le solde si un étudiant passe de PRESENT à ABSENT et que le solde est suffisant", async () => {
     mockFindAttendance.mockResolvedValue({ status: "PRESENT" } as any);
     mockUpsertAttendance.mockResolvedValue({} as any);
+    mockFindStudent.mockResolvedValue({ balance: 2000 } as any);
     mockUpdateStudent.mockResolvedValue({} as any);
 
     await saveAttendance("s-1", [{ studentId: "st-1", status: "ABSENT" }]);
@@ -68,6 +70,16 @@ describe("saveAttendance", () => {
     expect(mockUpdateStudent).toHaveBeenCalledWith(
       expect.objectContaining({ data: { balance: { decrement: 1000 } } })
     );
+  });
+
+  it("ne décrémente pas le solde si le solde est insuffisant (protection contre solde négatif)", async () => {
+    mockFindAttendance.mockResolvedValue({ status: "PRESENT" } as any);
+    mockUpsertAttendance.mockResolvedValue({} as any);
+    mockFindStudent.mockResolvedValue({ balance: 0 } as any);
+
+    await saveAttendance("s-1", [{ studentId: "st-1", status: "ABSENT" }]);
+
+    expect(mockUpdateStudent).not.toHaveBeenCalled();
   });
 
   it("ne modifie pas le solde si le statut ne change pas (ABSENT → ABSENT)", async () => {
