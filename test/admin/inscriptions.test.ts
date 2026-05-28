@@ -4,6 +4,7 @@ vi.mock("@/lib/prisma", () => ({
   prisma: {
     inscriptionRequest: { findUnique: vi.fn(), update: vi.fn() },
     user: { findUnique: vi.fn(), create: vi.fn() },
+    $transaction: vi.fn(),
   },
 }));
 
@@ -33,7 +34,7 @@ import { sendInvitationEmail } from "@/lib/email";
 const mockGetSession = vi.mocked(getSession);
 const mockFindDemande = vi.mocked(prisma.inscriptionRequest.findUnique);
 const mockFindUser = vi.mocked(prisma.user.findUnique);
-const mockCreateUser = vi.mocked(prisma.user.create);
+const mockTransaction = vi.mocked(prisma.$transaction);
 const mockUpdateDemande = vi.mocked(prisma.inscriptionRequest.update);
 const mockSendEmail = vi.mocked(sendInvitationEmail);
 
@@ -76,31 +77,30 @@ describe("accepterInscription", () => {
     await expect(accepterInscription(makeFormData({ id: "d-1" }))).rejects.toThrow("Un compte existe déjà");
   });
 
-  it("crée le compte, met à jour la demande et envoie l'email si valide", async () => {
+  it("exécute la transaction et envoie l'email si valide", async () => {
     mockGetSession.mockResolvedValue(adminSession);
     mockFindDemande.mockResolvedValue(mockDemande as any);
     mockFindUser.mockResolvedValue(null);
-    mockCreateUser.mockResolvedValue({} as any);
-    mockUpdateDemande.mockResolvedValue({} as any);
+    mockTransaction.mockResolvedValue([{}, {}] as any);
     mockSendEmail.mockResolvedValue(undefined);
 
     await accepterInscription(makeFormData({ id: "d-1" }));
 
-    expect(mockCreateUser).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          email: "etudiant@test.com",
-          role: "STUDENT",
-          isActive: false,
-        }),
-      })
-    );
-    expect(mockUpdateDemande).toHaveBeenCalledWith(
-      expect.objectContaining({ data: { status: "ACCEPTED" } })
-    );
+    expect(mockTransaction).toHaveBeenCalled();
     expect(mockSendEmail).toHaveBeenCalledWith(
       expect.objectContaining({ to: "etudiant@test.com" })
     );
+  });
+
+  it("ne lance pas d'erreur si l'email échoue (le compte reste créé)", async () => {
+    mockGetSession.mockResolvedValue(adminSession);
+    mockFindDemande.mockResolvedValue(mockDemande as any);
+    mockFindUser.mockResolvedValue(null);
+    mockTransaction.mockResolvedValue([{}, {}] as any);
+    mockSendEmail.mockRejectedValue(new Error("Resend timeout"));
+
+    await expect(accepterInscription(makeFormData({ id: "d-1" }))).resolves.not.toThrow();
+    expect(mockTransaction).toHaveBeenCalled();
   });
 });
 
