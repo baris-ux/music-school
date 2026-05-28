@@ -8,7 +8,14 @@ type Props = {
 
 export default function DeleteSessionButton({ id }: Props) {
   return (
-    <form action={deleteSession}>
+    <form
+      action={deleteSession}
+      onSubmit={(e) => {
+        if (!window.confirm("Supprimer cette séance ? Cette action est irréversible.")) {
+          e.preventDefault();
+        }
+      }}
+    >
       <input type="hidden" name="id" value={id} />
       <button
         type="submit"

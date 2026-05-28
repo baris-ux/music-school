@@ -71,6 +71,27 @@ export async function createSession(
   return { success: "La séance a bien été créée." };
 }
 
+export async function updateSessionStatus(formData: FormData) {
+  const session = await getSession();
+  if (!session || session.role !== "ADMIN") {
+    throw new Error("Accès refusé.");
+  }
+
+  const id = String(formData.get("id") ?? "").trim();
+  const status = String(formData.get("status") ?? "").trim() as "PLANNED" | "CANCELLED" | "COMPLETED";
+
+  if (!id || !["PLANNED", "CANCELLED", "COMPLETED"].includes(status)) {
+    throw new Error("Données invalides.");
+  }
+
+  await prisma.session.update({
+    where: { id },
+    data: { status },
+  });
+
+  revalidatePath("/admin/sessions");
+}
+
 export async function deleteSession(formData: FormData) {
   const session = await getSession();
 

@@ -4,31 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { sendInvitationEmail } from "@/lib/email";
 import crypto from "crypto";
-
-async function deleteStudent(formData: FormData) {
-  "use server";
-  const session = await getSession();
-  if (!session || session.role !== "ADMIN") redirect("/login");
-
-  const id = String(formData.get("id") ?? "");
-  if (!id) return;
-
-  const student = await prisma.student.findUnique({
-    where: { id },
-    include: { user: true },
-  });
-  if (!student) throw new Error("Étudiant introuvable");
-
-  await prisma.$transaction([
-    prisma.resourceAccess.deleteMany({ where: { studentId: id } }),
-    prisma.attendance.deleteMany({ where: { studentId: id } }),
-    prisma.enrollment.deleteMany({ where: { studentId: id } }),
-    prisma.student.delete({ where: { id } }),
-    prisma.user.delete({ where: { id: student.user.id } }),
-  ]);
-
-  revalidatePath("/admin/students");
-}
+import DeleteStudentButton from "./DeleteStudentButton";
 
 async function confirmPayment(formData: FormData) {
   "use server";
@@ -204,15 +180,7 @@ export default async function StudentsPage() {
                         </button>
                       </form>
                     )}
-                    <form action={deleteStudent}>
-                      <input type="hidden" name="id" value={student.id} />
-                      <button
-                        type="submit"
-                        className="rounded-lg px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 hover:text-red-800"
-                      >
-                        Supprimer
-                      </button>
-                    </form>
+                    <DeleteStudentButton id={student.id} />
                   </div>
                 </div>
 
