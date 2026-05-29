@@ -91,6 +91,11 @@ export default async function StudentPage() {
     }))
   );
 
+  const pendingPricing = await prisma.pricingConfig.findFirst({
+    where: { appliedAt: null },
+    orderBy: { createdAt: "desc" },
+  });
+
   const upcomingSessions = await prisma.session.findMany({
     where: {
       courseId: { in: student.enrollments.map((e) => e.courseId) },
@@ -109,6 +114,22 @@ export default async function StudentPage() {
           Bienvenue {student.firstName} {student.lastName}.
         </p>
       </div>
+
+      {pendingPricing && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+          <p className="text-sm font-semibold text-amber-900">Modification des tarifs</p>
+          <p className="mt-1 text-sm text-amber-800">
+            À partir du{" "}
+            <strong>
+              {new Date(pendingPricing.effectiveFrom).toLocaleDateString("fr-BE", {
+                day: "numeric", month: "long", year: "numeric",
+              })}
+            </strong>{" "}
+            : {(pendingPricing.perSessionCents / 100).toFixed(2)} € à la séance
+            · {(pendingPricing.monthlyCents / 100).toFixed(2)} €/mois
+          </p>
+        </div>
+      )}
 
       <div className="rounded-2xl border border-slate-300 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-950">Mes prochaines séances</h2>

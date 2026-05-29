@@ -24,17 +24,38 @@ export async function GET(request: Request) {
       });
     }
 
-    // 2. Facturer les étudiants en mode mensuel (50 €)
-    const { count } = await prisma.student.updateMany({
-      where: { paymentMode: "MONTHLY" },
-      data: { balance: { increment: 5000 } },
+    // 2. Appliquer les tarifs planifiés dont la date est dépassée
+    const pendingPricing = await prisma.pricingConfig.findFirst({
+      where: { appliedAt: null, effectiveFrom: { lte: new Date() } },
+      orderBy: { effectiveFrom: "asc" },
     });
 
-    console.log(`Cron billing: ${studentsWithPending.length} mode(s) appliqué(s), ${count} étudiant(s) facturé(s)`);
+    if (pendingPricing) {
+      await prisma.pricingConfig.update({
+        where: { id: pendingPricing.id },
+        data: { appliedAt: new Date() },
+      });
+    }
+
+    // 3. Lire le tarif mensuel actif
+    const activePricing = await prisma.pricingConfig.findFirst({
+      where: { appliedAt: { not: null } },
+      orderBy: { appliedAt: "desc" },
+    });
+    const monthlyCents = activePricing?.monthlyCents ?? 5000;
+
+    // 4. Facturer les étudiants en mode mensuel
+    const { count } = await prisma.student.updateMany({
+      where: { paymentMode: "MONTHLY" },
+      data: { balance: { increment: monthlyCents } },
+    });
+
+    console.log(`Cron billing: ${studentsWithPending.length} mode(s) appliqué(s), tarif ${pendingPricing ? "mis à jour" : "inchangé"}, ${count} étudiant(s) facturé(s)`);
 
     return NextResponse.json({
       success: true,
       modesApplied: studentsWithPending.length,
+      pricingUpdated: !!pendingPricing,
       studentsBilled: count,
     });
   } catch (error) {

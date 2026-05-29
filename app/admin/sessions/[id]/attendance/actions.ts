@@ -73,7 +73,11 @@ export async function saveAttendance(
       // Le mode MONTHLY ne génère pas de facturation à la séance
       if (student?.paymentMode === "MONTHLY") return;
 
-      const PRICE = 1750; // 17,50 €
+      const pricing = await prisma.pricingConfig.findFirst({
+        where: { appliedAt: { not: null } },
+        orderBy: { appliedAt: "desc" },
+      });
+      const PRICE = pricing?.perSessionCents ?? 1750;
 
       if (!wasPresent && isNowPresent) {
         await prisma.student.update({

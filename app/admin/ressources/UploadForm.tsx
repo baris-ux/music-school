@@ -61,7 +61,7 @@ export default function UploadForm({ uploadResource }: Props) {
             name="title"
             type="text"
             required
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 focus:outline-none focus:ring-2 focus:ring-slate-400"
           />
         </div>
 
@@ -72,7 +72,7 @@ export default function UploadForm({ uploadResource }: Props) {
           <textarea
             name="description"
             rows={2}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 focus:outline-none focus:ring-2 focus:ring-slate-400"
           />
         </div>
 

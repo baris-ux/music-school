@@ -191,6 +191,15 @@ enum InscriptionStatus {
 }
 
 
+model PricingConfig {
+  id              String    @id @default(uuid())
+  perSessionCents Int       // prix par séance en centimes
+  monthlyCents    Int       // prix mensuel en centimes
+  effectiveFrom   DateTime  // date d'entrée en vigueur
+  appliedAt       DateTime? // null = en attente, non-null = appliqué
+  createdAt       DateTime  @default(now())
+}
+
 model ScanToken {
   id        String   @id @default(uuid())
   token     String   @unique @default(uuid())

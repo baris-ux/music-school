@@ -395,6 +395,7 @@ export const ModelName = {
   Attendance: 'Attendance',
   InscriptionRequest: 'InscriptionRequest',
   InscriptionRequestCourse: 'InscriptionRequestCourse',
+  PricingConfig: 'PricingConfig',
   ScanToken: 'ScanToken',
   Resource: 'Resource',
   ResourceAccess: 'ResourceAccess'
@@ -413,7 +414,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "student" | "course" | "enrollment" | "event" | "order" | "ticket" | "session" | "attendance" | "inscriptionRequest" | "inscriptionRequestCourse" | "scanToken" | "resource" | "resourceAccess"
+    modelProps: "user" | "student" | "course" | "enrollment" | "event" | "order" | "ticket" | "session" | "attendance" | "inscriptionRequest" | "inscriptionRequestCourse" | "pricingConfig" | "scanToken" | "resource" | "resourceAccess"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1231,6 +1232,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PricingConfig: {
+      payload: Prisma.$PricingConfigPayload<ExtArgs>
+      fields: Prisma.PricingConfigFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PricingConfigFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PricingConfigPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PricingConfigFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PricingConfigPayload>
+        }
+        findFirst: {
+          args: Prisma.PricingConfigFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PricingConfigPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PricingConfigFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PricingConfigPayload>
+        }
+        findMany: {
+          args: Prisma.PricingConfigFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PricingConfigPayload>[]
+        }
+        create: {
+          args: Prisma.PricingConfigCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PricingConfigPayload>
+        }
+        createMany: {
+          args: Prisma.PricingConfigCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PricingConfigCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PricingConfigPayload>[]
+        }
+        delete: {
+          args: Prisma.PricingConfigDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PricingConfigPayload>
+        }
+        update: {
+          args: Prisma.PricingConfigUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PricingConfigPayload>
+        }
+        deleteMany: {
+          args: Prisma.PricingConfigDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PricingConfigUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PricingConfigUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PricingConfigPayload>[]
+        }
+        upsert: {
+          args: Prisma.PricingConfigUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PricingConfigPayload>
+        }
+        aggregate: {
+          args: Prisma.PricingConfigAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePricingConfig>
+        }
+        groupBy: {
+          args: Prisma.PricingConfigGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PricingConfigGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PricingConfigCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PricingConfigCountAggregateOutputType> | number
+        }
+      }
+    }
     ScanToken: {
       payload: Prisma.$ScanTokenPayload<ExtArgs>
       fields: Prisma.ScanTokenFieldRefs
@@ -1636,6 +1711,18 @@ export const InscriptionRequestCourseScalarFieldEnum = {
 export type InscriptionRequestCourseScalarFieldEnum = (typeof InscriptionRequestCourseScalarFieldEnum)[keyof typeof InscriptionRequestCourseScalarFieldEnum]
 
 
+export const PricingConfigScalarFieldEnum = {
+  id: 'id',
+  perSessionCents: 'perSessionCents',
+  monthlyCents: 'monthlyCents',
+  effectiveFrom: 'effectiveFrom',
+  appliedAt: 'appliedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PricingConfigScalarFieldEnum = (typeof PricingConfigScalarFieldEnum)[keyof typeof PricingConfigScalarFieldEnum]
+
+
 export const ScanTokenScalarFieldEnum = {
   id: 'id',
   token: 'token',
@@ -1937,6 +2024,7 @@ export type GlobalOmitConfig = {
   attendance?: Prisma.AttendanceOmit
   inscriptionRequest?: Prisma.InscriptionRequestOmit
   inscriptionRequestCourse?: Prisma.InscriptionRequestCourseOmit
+  pricingConfig?: Prisma.PricingConfigOmit
   scanToken?: Prisma.ScanTokenOmit
   resource?: Prisma.ResourceOmit
   resourceAccess?: Prisma.ResourceAccessOmit

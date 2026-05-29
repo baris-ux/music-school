@@ -189,7 +189,7 @@ export default function SessionForm({ courses }: Props) {
           name="courseId"
           required
           defaultValue=""
-          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none focus:border-slate-500"
         >
           <option value="" disabled>Sélectionner un cours</option>
           {courses.map(course => (
@@ -241,7 +241,7 @@ export default function SessionForm({ courses }: Props) {
             required
             value={startTime}
             onChange={e => setStartTime(e.target.value)}
-            className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none focus:border-slate-500"
           />
         </div>
 
@@ -256,7 +256,7 @@ export default function SessionForm({ courses }: Props) {
             required
             value={endTime}
             onChange={e => setEndTime(e.target.value)}
-            className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none focus:border-slate-500"
           />
         </div>
       </div>

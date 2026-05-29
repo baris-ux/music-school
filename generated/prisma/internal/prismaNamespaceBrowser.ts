@@ -62,6 +62,7 @@ export const ModelName = {
   Attendance: 'Attendance',
   InscriptionRequest: 'InscriptionRequest',
   InscriptionRequestCourse: 'InscriptionRequestCourse',
+  PricingConfig: 'PricingConfig',
   ScanToken: 'ScanToken',
   Resource: 'Resource',
   ResourceAccess: 'ResourceAccess'
@@ -225,6 +226,18 @@ export const InscriptionRequestCourseScalarFieldEnum = {
 } as const
 
 export type InscriptionRequestCourseScalarFieldEnum = (typeof InscriptionRequestCourseScalarFieldEnum)[keyof typeof InscriptionRequestCourseScalarFieldEnum]
+
+
+export const PricingConfigScalarFieldEnum = {
+  id: 'id',
+  perSessionCents: 'perSessionCents',
+  monthlyCents: 'monthlyCents',
+  effectiveFrom: 'effectiveFrom',
+  appliedAt: 'appliedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PricingConfigScalarFieldEnum = (typeof PricingConfigScalarFieldEnum)[keyof typeof PricingConfigScalarFieldEnum]
 
 
 export const ScanTokenScalarFieldEnum = {
