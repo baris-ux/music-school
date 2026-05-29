@@ -22,6 +22,22 @@ async function confirmPayment(formData: FormData) {
   revalidatePath("/admin/students");
 }
 
+async function rejectPayment(formData: FormData) {
+  "use server";
+  const session = await getSession();
+  if (!session || session.role !== "ADMIN") redirect("/login");
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  await prisma.student.update({
+    where: { id },
+    data: { paymentRequested: false },
+  });
+
+  revalidatePath("/admin/students");
+}
+
 async function renvoyerInvitation(formData: FormData) {
   "use server";
   const session = await getSession();
@@ -159,15 +175,26 @@ export default async function StudentsPage() {
 
                   <div className="flex items-center gap-2">
                     {student.paymentRequested && (
-                      <form action={confirmPayment}>
-                        <input type="hidden" name="id" value={student.id} />
-                        <button
-                          type="submit"
-                          className="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-green-700 transition hover:bg-green-50 hover:text-green-800"
-                        >
-                          Confirmer le paiement
-                        </button>
-                      </form>
+                      <>
+                        <form action={confirmPayment}>
+                          <input type="hidden" name="id" value={student.id} />
+                          <button
+                            type="submit"
+                            className="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-green-700 transition hover:bg-green-50 hover:text-green-800"
+                          >
+                            Confirmer le paiement
+                          </button>
+                        </form>
+                        <form action={rejectPayment}>
+                          <input type="hidden" name="id" value={student.id} />
+                          <button
+                            type="submit"
+                            className="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 hover:text-red-800"
+                          >
+                            Refuser le virement
+                          </button>
+                        </form>
+                      </>
                     )}
                     {!student.user.isActive && (
                       <form action={renvoyerInvitation}>
