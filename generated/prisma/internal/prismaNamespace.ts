@@ -1515,6 +1515,8 @@ export const StudentScalarFieldEnum = {
   lastName: 'lastName',
   phoneNumber: 'phoneNumber',
   balance: 'balance',
+  paymentMode: 'paymentMode',
+  pendingPaymentMode: 'pendingPaymentMode',
   paymentRequested: 'paymentRequested'
 } as const
 
@@ -1757,6 +1759,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentMode'
+ */
+export type EnumPaymentModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMode'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentMode[]'
+ */
+export type ListEnumPaymentModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMode[]'>
     
 
 

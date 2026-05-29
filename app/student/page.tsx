@@ -35,6 +35,33 @@ export default async function StudentPage() {
     },
   });
 
+  async function updatePaymentMode(formData: FormData) {
+    "use server";
+    const session = await getSession();
+    if (!session) redirect("/login");
+
+    const mode = String(formData.get("paymentMode") ?? "");
+    if (!["PER_SESSION", "MONTHLY"].includes(mode)) return;
+
+    const current = await prisma.student.findUnique({
+      where: { userId: session.userId },
+      select: { paymentMode: true },
+    });
+
+    await prisma.student.update({
+      where: { userId: session.userId },
+      data: {
+        // Si même mode que l'actuel → annule le changement en attente
+        // Sinon → enregistre le changement en attente
+        pendingPaymentMode: current?.paymentMode === mode
+          ? null
+          : mode as "PER_SESSION" | "MONTHLY",
+      },
+    });
+
+    revalidatePath("/student");
+  }
+
   async function requestPayment(formData: FormData) {
     "use server";
     const session = await getSession();
@@ -109,6 +136,41 @@ export default async function StudentPage() {
             </span>
           </p>
         </div>
+
+        <div className="mt-4 border-t border-slate-100 pt-4 space-y-3">
+          <p className="text-sm font-medium text-slate-900">Mode de paiement</p>
+
+          <div className="flex items-center gap-2">
+            <span className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+              Actuel : {student.paymentMode === "PER_SESSION" ? "À la séance (17,50 €)" : "Mensuel (50 €/mois)"}
+            </span>
+            {student.pendingPaymentMode && (
+              <span className="inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                Dès le 1er du mois : {student.pendingPaymentMode === "PER_SESSION" ? "À la séance (17,50 €)" : "Mensuel (50 €/mois)"}
+              </span>
+            )}
+          </div>
+
+          <form action={updatePaymentMode} className="flex items-center gap-3">
+            <select
+              name="paymentMode"
+              defaultValue={student.pendingPaymentMode ?? student.paymentMode}
+              className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-300"
+            >
+              <option value="PER_SESSION">À la séance — 17,50 € par cours assisté</option>
+              <option value="MONTHLY">Mensuel — 50 € par mois</option>
+            </select>
+            <button
+              type="submit"
+              className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+            >
+              Changer
+            </button>
+          </form>
+          <p className="text-xs text-slate-500">
+            Tout changement de mode sera appliqué au 1er du mois suivant.
+          </p>
+        </div>
       </div>
 
       {/* Détail des séances facturées */}
@@ -145,36 +207,37 @@ export default async function StudentPage() {
               </span>
             </div>
 
-            {/* Informations de virement si solde dû */}
-            {student.balance > 0 && (
-              <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 space-y-1">
-                <p className="text-sm font-semibold text-blue-900">Informations de virement</p>
-                <p className="text-sm text-blue-800">
-                  <span className="font-medium">Bénéficiaire :</span> {process.env.SCHOOL_NAME}
-                </p>
-                <p className="text-sm text-blue-800">
-                  <span className="font-medium">IBAN :</span> {process.env.SCHOOL_IBAN}
-                </p>
-                <p className="text-sm text-blue-800">
-                  <span className="font-medium">Communication :</span> {student.firstName} {student.lastName} —{" "}
-                  {new Date().toLocaleDateString("fr-BE", { month: "long", year: "numeric" })}
-                </p>
+          </div>
+        )}
 
-                {student.paymentRequested ? (
-                  <div className="mt-3 rounded-lg bg-green-100 px-3 py-2 text-sm text-green-800 font-medium">
-                    Virement déclaré — en attente de confirmation par l'administration.
-                  </div>
-                ) : (
-                  <form action={requestPayment} className="mt-3">
-                    <button
-                      type="submit"
-                      className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
-                    >
-                      J'ai effectué mon virement
-                    </button>
-                  </form>
-                )}
+        {/* Informations de virement si solde dû */}
+        {student.balance > 0 && (
+          <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 space-y-1">
+            <p className="text-sm font-semibold text-blue-900">Informations de virement</p>
+            <p className="text-sm text-blue-800">
+              <span className="font-medium">Bénéficiaire :</span> {process.env.SCHOOL_NAME}
+            </p>
+            <p className="text-sm text-blue-800">
+              <span className="font-medium">IBAN :</span> {process.env.SCHOOL_IBAN}
+            </p>
+            <p className="text-sm text-blue-800">
+              <span className="font-medium">Communication :</span> {student.firstName} {student.lastName} —{" "}
+              {new Date().toLocaleDateString("fr-BE", { month: "long", year: "numeric" })}
+            </p>
+
+            {student.paymentRequested ? (
+              <div className="mt-3 rounded-lg bg-green-100 px-3 py-2 text-sm text-green-800 font-medium">
+                Virement déclaré — en attente de confirmation par l'administration.
               </div>
+            ) : (
+              <form action={requestPayment} className="mt-3">
+                <button
+                  type="submit"
+                  className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
+                >
+                  J'ai effectué mon virement
+                </button>
+              </form>
             )}
           </div>
         )}

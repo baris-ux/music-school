@@ -29,13 +29,20 @@ model User {
   student Student?
 }
 
+enum PaymentMode {
+  PER_SESSION
+  MONTHLY
+}
+
 model Student {
   id          String   @id @default(uuid())
   userId      String   @unique
   firstName   String
   lastName    String
   phoneNumber String?
-  balance     Int      @default(0) // solde en centimes (ex: 1000 = 10€)
+  balance            Int          @default(0) // solde en centimes (ex: 1750 = 17,50€)
+  paymentMode        PaymentMode  @default(PER_SESSION)
+  pendingPaymentMode PaymentMode? // changement de mode en attente, appliqué au 1er du mois
 
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   enrollments Enrollment[]

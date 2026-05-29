@@ -6,6 +6,19 @@ import { sendInvitationEmail } from "@/lib/email";
 import crypto from "crypto";
 import DeleteStudentButton from "./DeleteStudentButton";
 
+async function facturerMois(formData: FormData) {
+  "use server";
+  const session = await getSession();
+  if (!session || session.role !== "ADMIN") redirect("/login");
+
+  await prisma.student.updateMany({
+    where: { paymentMode: "MONTHLY" },
+    data: { balance: { increment: 5000 } },
+  });
+
+  revalidatePath("/admin/students");
+}
+
 async function confirmPayment(formData: FormData) {
   "use server";
   const session = await getSession();
@@ -126,11 +139,21 @@ export default async function StudentsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold text-slate-950">Étudiants</h1>
-        <p className="mt-1 text-sm text-slate-700">
-          Consultez, gérez les comptes et les inscriptions aux cours.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-950">Étudiants</h1>
+          <p className="mt-1 text-sm text-slate-700">
+            Consultez, gérez les comptes et les inscriptions aux cours.
+          </p>
+        </div>
+        <form action={facturerMois}>
+          <button
+            type="submit"
+            className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+          >
+            Facturer le mois
+          </button>
+        </form>
       </div>
 
       {students.length === 0 ? (
@@ -209,6 +232,19 @@ export default async function StudentsPage() {
                     )}
                     <DeleteStudentButton id={student.id} />
                   </div>
+                </div>
+
+                {/* Mode de paiement (lecture seule) */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm font-medium text-slate-900">Mode de paiement :</span>
+                  <span className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+                    {student.paymentMode === "PER_SESSION" ? "À la séance (17,50 €)" : "Mensuel (50 €/mois)"}
+                  </span>
+                  {student.pendingPaymentMode && (
+                    <span className="inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                      Dès le 1er : {student.pendingPaymentMode === "PER_SESSION" ? "À la séance" : "Mensuel"}
+                    </span>
+                  )}
                 </div>
 
                 {/* Cours inscrits */}

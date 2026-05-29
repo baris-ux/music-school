@@ -17,6 +17,14 @@ export const Role = {
 export type Role = (typeof Role)[keyof typeof Role]
 
 
+export const PaymentMode = {
+  PER_SESSION: 'PER_SESSION',
+  MONTHLY: 'MONTHLY'
+} as const
+
+export type PaymentMode = (typeof PaymentMode)[keyof typeof PaymentMode]
+
+
 export const SessionStatus = {
   PLANNED: 'PLANNED',
   CANCELLED: 'CANCELLED',

@@ -106,6 +106,8 @@ export const StudentScalarFieldEnum = {
   lastName: 'lastName',
   phoneNumber: 'phoneNumber',
   balance: 'balance',
+  paymentMode: 'paymentMode',
+  pendingPaymentMode: 'pendingPaymentMode',
   paymentRequested: 'paymentRequested'
 } as const
 

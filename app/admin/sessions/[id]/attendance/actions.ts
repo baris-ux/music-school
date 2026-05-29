@@ -65,23 +65,26 @@ export async function saveAttendance(
         },
       });
 
-      // Ajuste le solde selon le changement de statut
+      const student = await prisma.student.findUnique({
+        where: { id: record.studentId },
+        select: { balance: true, paymentMode: true },
+      });
+
+      // Le mode MONTHLY ne génère pas de facturation à la séance
+      if (student?.paymentMode === "MONTHLY") return;
+
+      const PRICE = 1750; // 17,50 €
+
       if (!wasPresent && isNowPresent) {
-        // Devient PRESENT → +1000 centimes (10€)
         await prisma.student.update({
           where: { id: record.studentId },
-          data: { balance: { increment: 1000 } },
+          data: { balance: { increment: PRICE } },
         });
       } else if (wasPresent && !isNowPresent) {
-        // N'est plus PRESENT → -1000 centimes, sans descendre sous 0
-        const student = await prisma.student.findUnique({
-          where: { id: record.studentId },
-          select: { balance: true },
-        });
-        if (student && student.balance >= 1000) {
+        if (student && student.balance >= PRICE) {
           await prisma.student.update({
             where: { id: record.studentId },
-            data: { balance: { decrement: 1000 } },
+            data: { balance: { decrement: PRICE } },
           });
         }
       }

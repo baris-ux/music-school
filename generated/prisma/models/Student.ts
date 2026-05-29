@@ -41,6 +41,8 @@ export type StudentMinAggregateOutputType = {
   lastName: string | null
   phoneNumber: string | null
   balance: number | null
+  paymentMode: $Enums.PaymentMode | null
+  pendingPaymentMode: $Enums.PaymentMode | null
   paymentRequested: boolean | null
 }
 
@@ -51,6 +53,8 @@ export type StudentMaxAggregateOutputType = {
   lastName: string | null
   phoneNumber: string | null
   balance: number | null
+  paymentMode: $Enums.PaymentMode | null
+  pendingPaymentMode: $Enums.PaymentMode | null
   paymentRequested: boolean | null
 }
 
@@ -61,6 +65,8 @@ export type StudentCountAggregateOutputType = {
   lastName: number
   phoneNumber: number
   balance: number
+  paymentMode: number
+  pendingPaymentMode: number
   paymentRequested: number
   _all: number
 }
@@ -81,6 +87,8 @@ export type StudentMinAggregateInputType = {
   lastName?: true
   phoneNumber?: true
   balance?: true
+  paymentMode?: true
+  pendingPaymentMode?: true
   paymentRequested?: true
 }
 
@@ -91,6 +99,8 @@ export type StudentMaxAggregateInputType = {
   lastName?: true
   phoneNumber?: true
   balance?: true
+  paymentMode?: true
+  pendingPaymentMode?: true
   paymentRequested?: true
 }
 
@@ -101,6 +111,8 @@ export type StudentCountAggregateInputType = {
   lastName?: true
   phoneNumber?: true
   balance?: true
+  paymentMode?: true
+  pendingPaymentMode?: true
   paymentRequested?: true
   _all?: true
 }
@@ -198,6 +210,8 @@ export type StudentGroupByOutputType = {
   lastName: string
   phoneNumber: string | null
   balance: number
+  paymentMode: $Enums.PaymentMode
+  pendingPaymentMode: $Enums.PaymentMode | null
   paymentRequested: boolean
   _count: StudentCountAggregateOutputType | null
   _avg: StudentAvgAggregateOutputType | null
@@ -231,6 +245,8 @@ export type StudentWhereInput = {
   lastName?: Prisma.StringFilter<"Student"> | string
   phoneNumber?: Prisma.StringNullableFilter<"Student"> | string | null
   balance?: Prisma.IntFilter<"Student"> | number
+  paymentMode?: Prisma.EnumPaymentModeFilter<"Student"> | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.EnumPaymentModeNullableFilter<"Student"> | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFilter<"Student"> | boolean
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   enrollments?: Prisma.EnrollmentListRelationFilter
@@ -245,6 +261,8 @@ export type StudentOrderByWithRelationInput = {
   lastName?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   balance?: Prisma.SortOrder
+  paymentMode?: Prisma.SortOrder
+  pendingPaymentMode?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentRequested?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   enrollments?: Prisma.EnrollmentOrderByRelationAggregateInput
@@ -262,6 +280,8 @@ export type StudentWhereUniqueInput = Prisma.AtLeast<{
   lastName?: Prisma.StringFilter<"Student"> | string
   phoneNumber?: Prisma.StringNullableFilter<"Student"> | string | null
   balance?: Prisma.IntFilter<"Student"> | number
+  paymentMode?: Prisma.EnumPaymentModeFilter<"Student"> | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.EnumPaymentModeNullableFilter<"Student"> | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFilter<"Student"> | boolean
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   enrollments?: Prisma.EnrollmentListRelationFilter
@@ -276,6 +296,8 @@ export type StudentOrderByWithAggregationInput = {
   lastName?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   balance?: Prisma.SortOrder
+  paymentMode?: Prisma.SortOrder
+  pendingPaymentMode?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentRequested?: Prisma.SortOrder
   _count?: Prisma.StudentCountOrderByAggregateInput
   _avg?: Prisma.StudentAvgOrderByAggregateInput
@@ -294,6 +316,8 @@ export type StudentScalarWhereWithAggregatesInput = {
   lastName?: Prisma.StringWithAggregatesFilter<"Student"> | string
   phoneNumber?: Prisma.StringNullableWithAggregatesFilter<"Student"> | string | null
   balance?: Prisma.IntWithAggregatesFilter<"Student"> | number
+  paymentMode?: Prisma.EnumPaymentModeWithAggregatesFilter<"Student"> | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.EnumPaymentModeNullableWithAggregatesFilter<"Student"> | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolWithAggregatesFilter<"Student"> | boolean
 }
 
@@ -303,6 +327,8 @@ export type StudentCreateInput = {
   lastName: string
   phoneNumber?: string | null
   balance?: number
+  paymentMode?: $Enums.PaymentMode
+  pendingPaymentMode?: $Enums.PaymentMode | null
   paymentRequested?: boolean
   user: Prisma.UserCreateNestedOneWithoutStudentInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
@@ -317,6 +343,8 @@ export type StudentUncheckedCreateInput = {
   lastName: string
   phoneNumber?: string | null
   balance?: number
+  paymentMode?: $Enums.PaymentMode
+  pendingPaymentMode?: $Enums.PaymentMode | null
   paymentRequested?: boolean
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
@@ -329,6 +357,8 @@ export type StudentUpdateInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutStudentNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
@@ -343,6 +373,8 @@ export type StudentUncheckedUpdateInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
@@ -356,6 +388,8 @@ export type StudentCreateManyInput = {
   lastName: string
   phoneNumber?: string | null
   balance?: number
+  paymentMode?: $Enums.PaymentMode
+  pendingPaymentMode?: $Enums.PaymentMode | null
   paymentRequested?: boolean
 }
 
@@ -365,6 +399,8 @@ export type StudentUpdateManyMutationInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -375,6 +411,8 @@ export type StudentUncheckedUpdateManyInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -390,6 +428,8 @@ export type StudentCountOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   balance?: Prisma.SortOrder
+  paymentMode?: Prisma.SortOrder
+  pendingPaymentMode?: Prisma.SortOrder
   paymentRequested?: Prisma.SortOrder
 }
 
@@ -404,6 +444,8 @@ export type StudentMaxOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   balance?: Prisma.SortOrder
+  paymentMode?: Prisma.SortOrder
+  pendingPaymentMode?: Prisma.SortOrder
   paymentRequested?: Prisma.SortOrder
 }
 
@@ -414,6 +456,8 @@ export type StudentMinOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   balance?: Prisma.SortOrder
+  paymentMode?: Prisma.SortOrder
+  pendingPaymentMode?: Prisma.SortOrder
   paymentRequested?: Prisma.SortOrder
 }
 
@@ -466,6 +510,14 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type EnumPaymentModeFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentMode
+}
+
+export type NullableEnumPaymentModeFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentMode | null
+}
+
 export type StudentCreateNestedOneWithoutEnrollmentsInput = {
   create?: Prisma.XOR<Prisma.StudentCreateWithoutEnrollmentsInput, Prisma.StudentUncheckedCreateWithoutEnrollmentsInput>
   connectOrCreate?: Prisma.StudentCreateOrConnectWithoutEnrollmentsInput
@@ -514,6 +566,8 @@ export type StudentCreateWithoutUserInput = {
   lastName: string
   phoneNumber?: string | null
   balance?: number
+  paymentMode?: $Enums.PaymentMode
+  pendingPaymentMode?: $Enums.PaymentMode | null
   paymentRequested?: boolean
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
@@ -526,6 +580,8 @@ export type StudentUncheckedCreateWithoutUserInput = {
   lastName: string
   phoneNumber?: string | null
   balance?: number
+  paymentMode?: $Enums.PaymentMode
+  pendingPaymentMode?: $Enums.PaymentMode | null
   paymentRequested?: boolean
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
@@ -554,6 +610,8 @@ export type StudentUpdateWithoutUserInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
@@ -566,6 +624,8 @@ export type StudentUncheckedUpdateWithoutUserInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
@@ -578,6 +638,8 @@ export type StudentCreateWithoutEnrollmentsInput = {
   lastName: string
   phoneNumber?: string | null
   balance?: number
+  paymentMode?: $Enums.PaymentMode
+  pendingPaymentMode?: $Enums.PaymentMode | null
   paymentRequested?: boolean
   user: Prisma.UserCreateNestedOneWithoutStudentInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
@@ -591,6 +653,8 @@ export type StudentUncheckedCreateWithoutEnrollmentsInput = {
   lastName: string
   phoneNumber?: string | null
   balance?: number
+  paymentMode?: $Enums.PaymentMode
+  pendingPaymentMode?: $Enums.PaymentMode | null
   paymentRequested?: boolean
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
   accesses?: Prisma.ResourceAccessUncheckedCreateNestedManyWithoutStudentInput
@@ -618,6 +682,8 @@ export type StudentUpdateWithoutEnrollmentsInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutStudentNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
@@ -631,6 +697,8 @@ export type StudentUncheckedUpdateWithoutEnrollmentsInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
   accesses?: Prisma.ResourceAccessUncheckedUpdateManyWithoutStudentNestedInput
@@ -642,6 +710,8 @@ export type StudentCreateWithoutAttendancesInput = {
   lastName: string
   phoneNumber?: string | null
   balance?: number
+  paymentMode?: $Enums.PaymentMode
+  pendingPaymentMode?: $Enums.PaymentMode | null
   paymentRequested?: boolean
   user: Prisma.UserCreateNestedOneWithoutStudentInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
@@ -655,6 +725,8 @@ export type StudentUncheckedCreateWithoutAttendancesInput = {
   lastName: string
   phoneNumber?: string | null
   balance?: number
+  paymentMode?: $Enums.PaymentMode
+  pendingPaymentMode?: $Enums.PaymentMode | null
   paymentRequested?: boolean
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
   accesses?: Prisma.ResourceAccessUncheckedCreateNestedManyWithoutStudentInput
@@ -682,6 +754,8 @@ export type StudentUpdateWithoutAttendancesInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutStudentNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
@@ -695,6 +769,8 @@ export type StudentUncheckedUpdateWithoutAttendancesInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
   accesses?: Prisma.ResourceAccessUncheckedUpdateManyWithoutStudentNestedInput
@@ -706,6 +782,8 @@ export type StudentCreateWithoutAccessesInput = {
   lastName: string
   phoneNumber?: string | null
   balance?: number
+  paymentMode?: $Enums.PaymentMode
+  pendingPaymentMode?: $Enums.PaymentMode | null
   paymentRequested?: boolean
   user: Prisma.UserCreateNestedOneWithoutStudentInput
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
@@ -719,6 +797,8 @@ export type StudentUncheckedCreateWithoutAccessesInput = {
   lastName: string
   phoneNumber?: string | null
   balance?: number
+  paymentMode?: $Enums.PaymentMode
+  pendingPaymentMode?: $Enums.PaymentMode | null
   paymentRequested?: boolean
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
@@ -746,6 +826,8 @@ export type StudentUpdateWithoutAccessesInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   user?: Prisma.UserUpdateOneRequiredWithoutStudentNestedInput
   enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
@@ -759,6 +841,8 @@ export type StudentUncheckedUpdateWithoutAccessesInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   balance?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentMode?: Prisma.EnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode
+  pendingPaymentMode?: Prisma.NullableEnumPaymentModeFieldUpdateOperationsInput | $Enums.PaymentMode | null
   paymentRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
@@ -820,6 +904,8 @@ export type StudentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   lastName?: boolean
   phoneNumber?: boolean
   balance?: boolean
+  paymentMode?: boolean
+  pendingPaymentMode?: boolean
   paymentRequested?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   enrollments?: boolean | Prisma.Student$enrollmentsArgs<ExtArgs>
@@ -835,6 +921,8 @@ export type StudentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   lastName?: boolean
   phoneNumber?: boolean
   balance?: boolean
+  paymentMode?: boolean
+  pendingPaymentMode?: boolean
   paymentRequested?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["student"]>
@@ -846,6 +934,8 @@ export type StudentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   lastName?: boolean
   phoneNumber?: boolean
   balance?: boolean
+  paymentMode?: boolean
+  pendingPaymentMode?: boolean
   paymentRequested?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["student"]>
@@ -857,10 +947,12 @@ export type StudentSelectScalar = {
   lastName?: boolean
   phoneNumber?: boolean
   balance?: boolean
+  paymentMode?: boolean
+  pendingPaymentMode?: boolean
   paymentRequested?: boolean
 }
 
-export type StudentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "firstName" | "lastName" | "phoneNumber" | "balance" | "paymentRequested", ExtArgs["result"]["student"]>
+export type StudentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "firstName" | "lastName" | "phoneNumber" | "balance" | "paymentMode" | "pendingPaymentMode" | "paymentRequested", ExtArgs["result"]["student"]>
 export type StudentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   enrollments?: boolean | Prisma.Student$enrollmentsArgs<ExtArgs>
@@ -890,6 +982,8 @@ export type $StudentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     lastName: string
     phoneNumber: string | null
     balance: number
+    paymentMode: $Enums.PaymentMode
+    pendingPaymentMode: $Enums.PaymentMode | null
     paymentRequested: boolean
   }, ExtArgs["result"]["student"]>
   composites: {}
@@ -1324,6 +1418,8 @@ export interface StudentFieldRefs {
   readonly lastName: Prisma.FieldRef<"Student", 'String'>
   readonly phoneNumber: Prisma.FieldRef<"Student", 'String'>
   readonly balance: Prisma.FieldRef<"Student", 'Int'>
+  readonly paymentMode: Prisma.FieldRef<"Student", 'PaymentMode'>
+  readonly pendingPaymentMode: Prisma.FieldRef<"Student", 'PaymentMode'>
   readonly paymentRequested: Prisma.FieldRef<"Student", 'Boolean'>
 }
     
