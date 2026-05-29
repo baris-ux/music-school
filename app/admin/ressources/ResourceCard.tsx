@@ -31,7 +31,6 @@ type Props = {
     formData: FormData
   ) => Promise<{ error: string | null; success: string | null }>;
   deleteResource: (formData: FormData) => Promise<void>;
-  getSignedResourceUrl: (fileUrl: string) => Promise<string>;
 };
 
 export default function ResourceCard({
@@ -39,7 +38,6 @@ export default function ResourceCard({
   students,
   updateAccess,
   deleteResource,
-  getSignedResourceUrl,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [studentSearch, setStudentSearch] = useState("");
@@ -96,7 +94,7 @@ export default function ResourceCard({
 
         <div className="flex items-center gap-1 shrink-0">
           <button
-            onClick={() => window.open(resource.fileUrl, "_blank")}
+            onClick={() => window.open(`/api/resources/${resource.id}`, "_blank")}
             className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
           >
             Voir

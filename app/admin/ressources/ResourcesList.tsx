@@ -23,12 +23,11 @@ type Props = {
   students: Student[];
   updateAccess: (prevState: { error: string | null; success: string | null }, formData: FormData) => Promise<{ error: string | null; success: string | null }>;
   deleteResource: (formData: FormData) => Promise<void>;
-  getSignedResourceUrl: (fileUrl: string) => Promise<string>;
 };
 
 const PAGE_SIZE = 10;
 
-export default function ResourcesList({ resources, students, updateAccess, deleteResource, getSignedResourceUrl }: Props) {
+export default function ResourcesList({ resources, students, updateAccess, deleteResource }: Props) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "with_access" | "no_access">("all");
   const [page, setPage] = useState(1);
@@ -108,7 +107,6 @@ export default function ResourcesList({ resources, students, updateAccess, delet
               students={students}
               updateAccess={updateAccess}
               deleteResource={deleteResource}
-              getSignedResourceUrl={getSignedResourceUrl}
             />
           ))}
         </div>

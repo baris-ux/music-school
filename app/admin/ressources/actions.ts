@@ -1,7 +1,7 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
-import { put, del, head } from "@vercel/blob";
+import { put, del } from "@vercel/blob";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
@@ -21,7 +21,7 @@ export async function uploadResource(
     return { error: "Seuls les fichiers PDF sont acceptés", success: null };
   }
   const blob = await put(file.name, file, {
-    access: "public",
+    access: "private",
     contentType: "application/pdf",
   });
   await prisma.resource.create({
@@ -68,13 +68,8 @@ export async function updateAccess(
   return { error: null, success: "Accès mis à jour" };
 }
 
-export async function getSignedResourceUrl(fileUrl: string): Promise<string> {
+export async function getResourceDownloadUrl(resourceId: string): Promise<string> {
   const session = await getSession();
   if (!session) redirect("/login");
-
-  const blob = await head(fileUrl, {
-    token: process.env.BLOB_READ_WRITE_TOKEN!,
-  });
-
-  return blob.downloadUrl;
+  return `/api/resources/${resourceId}`;
 }

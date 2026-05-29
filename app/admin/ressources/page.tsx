@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
-import { uploadResource, deleteResource, updateAccess, getSignedResourceUrl } from "./actions";
+import { uploadResource, deleteResource, updateAccess } from "./actions";
 import UploadForm from "./UploadForm";
 import ResourcesList from "./ResourcesList";
 
@@ -37,7 +37,6 @@ export default async function RessourcesPage() {
         students={students}
         updateAccess={updateAccess}
         deleteResource={deleteResource}
-        getSignedResourceUrl={getSignedResourceUrl}
       />
     </div>
   );

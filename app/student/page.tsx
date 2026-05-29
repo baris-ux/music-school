@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
-import { getSignedResourceUrl } from "@/app/admin/ressources/actions";
+import { getResourceDownloadUrl } from "@/app/admin/ressources/actions";
 import SessionCalendar from "./SessionCalendar";
 
 import { revalidatePath } from "next/cache";
@@ -87,7 +87,7 @@ export default async function StudentPage() {
   const resourcesWithUrls = await Promise.all(
     student.accesses.map(async (access) => ({
       ...access.resource,
-      downloadUrl: await getSignedResourceUrl(access.resource.fileUrl),
+      downloadUrl: await getResourceDownloadUrl(access.resource.id),
     }))
   );
 
