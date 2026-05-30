@@ -10,6 +10,9 @@ export default async function InscriptionsAdminPage() {
 
   const demandes = await prisma.inscriptionRequest.findMany({
     orderBy: { createdAt: "desc" },
+    include: {
+      courses: { include: { course: true } },
+    },
   });
 
   const enAttente = demandes.filter((d) => d.status === "PENDING");
@@ -49,6 +52,17 @@ export default async function InscriptionsAdminPage() {
                 <p className="text-sm text-slate-700">{demande.email}</p>
                 {demande.phoneNumber && (
                   <p className="text-sm text-slate-700">{demande.phoneNumber}</p>
+                )}
+                {demande.isParent && (
+                  <p className="mt-1 text-sm text-slate-700">
+                    Parent : {demande.parentFirstName} {demande.parentLastName}
+                  </p>
+                )}
+                {demande.courses.length > 0 && (
+                  <p className="mt-1 text-sm text-slate-700">
+                    Cours demandés :{" "}
+                    {demande.courses.map((c) => c.course.title).join(", ")}
+                  </p>
                 )}
                 {demande.message && (
                   <p className="mt-2 text-sm text-slate-600 italic">

@@ -170,6 +170,19 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
         />
       </div>
 
+      {/* Consentement RGPD */}
+      <label className="flex cursor-pointer items-start gap-3">
+        <input
+          type="checkbox"
+          name="gdprConsent"
+          required
+          className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300"
+        />
+        <span className="text-sm text-slate-600">
+          {t.gdpr_consent} <span className="text-red-500">*</span>
+        </span>
+      </label>
+
       <button
         type="submit"
         className="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"

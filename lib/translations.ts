@@ -58,6 +58,7 @@ export const translations = {
       message: "Message (optionnel)",
       message_placeholder: "Niveau, questions...",
       submit: "Envoyer ma demande",
+      gdpr_consent: "J'accepte que mes données personnelles (nom, prénom, adresse e-mail) soient traitées dans le cadre de la gestion de mon inscription et de mes cours, conformément au RGPD.",
     },
     events: {
       badge: "École de musique",
@@ -171,6 +172,7 @@ export const translations = {
       message: "Mesaj (isteğe bağlı)",
       message_placeholder: "Seviye, sorular...",
       submit: "Talebimi gönder",
+      gdpr_consent: "Kaydım ve derslerimin yönetimi kapsamında kişisel verilerimin (ad, soyad, e-posta adresi) GDPR uyarınca işlenmesini kabul ediyorum.",
     },
     events: {
       badge: "Müzik okulu",

@@ -3,6 +3,15 @@ import { Resend } from "resend";
 const resendApiKey = process.env.RESEND_API_KEY;
 export const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export async function sendInvitationEmail({
   to,
   firstName,
@@ -18,9 +27,6 @@ export async function sendInvitationEmail({
   }
 
   const lien = `${process.env.NEXT_PUBLIC_APP_URL}/activation?token=${token}`;
-
-  console.log("Envoi email à:", to);
-  console.log("Lien:", lien);
 
   const result = await resend.emails.send({
     from: "Académie de Musique <onboarding@resend.dev>",
@@ -41,7 +47,7 @@ export async function sendInvitationEmail({
     `,
   });
 
-  console.log("Résultat Resend:", result);
+  void result;
 }
 
 export async function sendContactEmail({
@@ -65,10 +71,10 @@ export async function sendContactEmail({
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: auto;">
         <h2>Nouveau message de contact</h2>
-        <p><strong>Nom :</strong> ${name}</p>
-        <p><strong>Email :</strong> ${email}</p>
+        <p><strong>Nom :</strong> ${escapeHtml(name)}</p>
+        <p><strong>Email :</strong> ${escapeHtml(email)}</p>
         <p><strong>Message :</strong></p>
-        <p style="background:#f8f8f8;padding:12px;border-radius:8px;">${message}</p>
+        <p style="background:#f8f8f8;padding:12px;border-radius:8px;">${escapeHtml(message)}</p>
       </div>
     `,
   });
