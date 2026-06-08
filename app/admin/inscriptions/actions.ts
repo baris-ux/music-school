@@ -1,6 +1,6 @@
 "use server";
 
-import { sendInvitationEmail } from "@/lib/email";
+import { sendInvitationEmail, sendRejectionEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
@@ -14,7 +14,10 @@ export async function accepterInscription(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
-  const demande = await prisma.inscriptionRequest.findUnique({ where: { id } });
+  const demande = await prisma.inscriptionRequest.findUnique({
+    where: { id },
+    include: { courses: true },
+  });
   if (!demande) throw new Error("Demande introuvable");
 
   const existingUser = await prisma.user.findUnique({
@@ -25,8 +28,8 @@ export async function accepterInscription(formData: FormData) {
   const invitationToken = crypto.randomBytes(32).toString("hex");
   const tokenExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
 
-  await prisma.$transaction([
-    prisma.user.create({
+  await prisma.$transaction(async (tx) => {
+    const user = await tx.user.create({
       data: {
         email: demande.email,
         role: "STUDENT",
@@ -41,12 +44,23 @@ export async function accepterInscription(formData: FormData) {
           },
         },
       },
-    }),
-    prisma.inscriptionRequest.update({
+      include: { student: true },
+    });
+
+    if (user.student && demande.courses.length > 0) {
+      await tx.enrollment.createMany({
+        data: demande.courses.map((c) => ({
+          studentId: user.student!.id,
+          courseId: c.courseId,
+        })),
+      });
+    }
+
+    await tx.inscriptionRequest.update({
       where: { id },
       data: { status: "ACCEPTED" },
-    }),
-  ]);
+    });
+  });
 
   try {
     await sendInvitationEmail({
@@ -68,10 +82,19 @@ export async function refuserInscription(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
+  const demande = await prisma.inscriptionRequest.findUnique({ where: { id } });
+  if (!demande) return;
+
   await prisma.inscriptionRequest.update({
     where: { id },
     data: { status: "REJECTED" },
   });
+
+  try {
+    await sendRejectionEmail({ to: demande.email, firstName: demande.firstName });
+  } catch (err) {
+    console.error("Échec envoi email de refus", err);
+  }
 
   revalidatePath("/admin/inscriptions");
 }

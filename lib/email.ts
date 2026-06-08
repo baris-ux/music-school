@@ -79,6 +79,36 @@ export async function sendInscriptionConfirmationEmail({
   });
 }
 
+export async function sendRejectionEmail({
+  to,
+  firstName,
+}: {
+  to: string;
+  firstName: string;
+}) {
+  if (!resend) {
+    console.warn("RESEND_API_KEY manquant — email non envoyé");
+    return;
+  }
+
+  await resend.emails.send({
+    from: "École de Musique <onboarding@resend.dev>",
+    to,
+    subject: "Votre demande d'inscription",
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: auto;">
+        <h2>Bonjour ${escapeHtml(firstName)},</h2>
+        <p>Nous avons bien examiné votre demande d'inscription à l'école de musique.</p>
+        <p>Nous ne sommes malheureusement pas en mesure de donner suite à votre demande pour le moment.</p>
+        <p>N'hésitez pas à nous contacter si vous souhaitez plus d'informations.</p>
+        <p style="margin-top:24px;font-size:12px;color:#94a3b8;">
+          Si vous pensez avoir reçu cet email par erreur, ignorez-le.
+        </p>
+      </div>
+    `,
+  });
+}
+
 export async function sendContactEmail({
   name,
   email,

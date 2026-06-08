@@ -31,17 +31,24 @@ export async function createOrder(
     return { error: "La quantité doit être comprise entre 1 et 10." };
   }
 
-  const event = await prisma.event.findUnique({
-    where: { id: eventId },
-    select: {
-      id: true,
-      title: true,
-      price: true,
-    },
-  });
+  const [event, soldCount] = await Promise.all([
+    prisma.event.findUnique({
+      where: { id: eventId },
+      select: { id: true, title: true, price: true, capacity: true },
+    }),
+    prisma.ticket.count({ where: { eventId } }),
+  ]);
 
   if (!event) {
     return { error: "Cet événement est introuvable." };
+  }
+
+  if (soldCount + quantity > event.capacity) {
+    const remaining = event.capacity - soldCount;
+    if (remaining <= 0) {
+      return { error: "Cet événement est complet." };
+    }
+    return { error: `Il ne reste que ${remaining} place${remaining > 1 ? "s" : ""} disponible${remaining > 1 ? "s" : ""}.` };
   }
 
   const amount = event.price * quantity;
