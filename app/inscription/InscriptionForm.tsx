@@ -123,7 +123,7 @@ export default function InscriptionForm({ cours }: { cours: Course[] }) {
 
           <div className="space-y-1.5">
             <label htmlFor="phoneNumber" className="text-sm font-medium text-slate-900">
-              {t.phone}
+              {isParent ? t.phone_parent : t.phone}
             </label>
             <input
               id="phoneNumber"

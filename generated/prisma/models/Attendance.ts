@@ -20,8 +20,18 @@ export type AttendanceModel = runtime.Types.Result.DefaultSelection<Prisma.$Atte
 
 export type AggregateAttendance = {
   _count: AttendanceCountAggregateOutputType | null
+  _avg: AttendanceAvgAggregateOutputType | null
+  _sum: AttendanceSumAggregateOutputType | null
   _min: AttendanceMinAggregateOutputType | null
   _max: AttendanceMaxAggregateOutputType | null
+}
+
+export type AttendanceAvgAggregateOutputType = {
+  amountCents: number | null
+}
+
+export type AttendanceSumAggregateOutputType = {
+  amountCents: number | null
 }
 
 export type AttendanceMinAggregateOutputType = {
@@ -29,6 +39,7 @@ export type AttendanceMinAggregateOutputType = {
   sessionId: string | null
   studentId: string | null
   status: $Enums.AttendanceStatus | null
+  amountCents: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -38,6 +49,7 @@ export type AttendanceMaxAggregateOutputType = {
   sessionId: string | null
   studentId: string | null
   status: $Enums.AttendanceStatus | null
+  amountCents: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,17 +59,27 @@ export type AttendanceCountAggregateOutputType = {
   sessionId: number
   studentId: number
   status: number
+  amountCents: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
 
+export type AttendanceAvgAggregateInputType = {
+  amountCents?: true
+}
+
+export type AttendanceSumAggregateInputType = {
+  amountCents?: true
+}
+
 export type AttendanceMinAggregateInputType = {
   id?: true
   sessionId?: true
   studentId?: true
   status?: true
+  amountCents?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -67,6 +89,7 @@ export type AttendanceMaxAggregateInputType = {
   sessionId?: true
   studentId?: true
   status?: true
+  amountCents?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -76,6 +99,7 @@ export type AttendanceCountAggregateInputType = {
   sessionId?: true
   studentId?: true
   status?: true
+  amountCents?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -119,6 +143,18 @@ export type AttendanceAggregateArgs<ExtArgs extends runtime.Types.Extensions.Int
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: AttendanceAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: AttendanceSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: AttendanceMinAggregateInputType
@@ -149,6 +185,8 @@ export type AttendanceGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   _count?: AttendanceCountAggregateInputType | true
+  _avg?: AttendanceAvgAggregateInputType
+  _sum?: AttendanceSumAggregateInputType
   _min?: AttendanceMinAggregateInputType
   _max?: AttendanceMaxAggregateInputType
 }
@@ -158,9 +196,12 @@ export type AttendanceGroupByOutputType = {
   sessionId: string
   studentId: string
   status: $Enums.AttendanceStatus
+  amountCents: number
   createdAt: Date
   updatedAt: Date
   _count: AttendanceCountAggregateOutputType | null
+  _avg: AttendanceAvgAggregateOutputType | null
+  _sum: AttendanceSumAggregateOutputType | null
   _min: AttendanceMinAggregateOutputType | null
   _max: AttendanceMaxAggregateOutputType | null
 }
@@ -188,6 +229,7 @@ export type AttendanceWhereInput = {
   sessionId?: Prisma.StringFilter<"Attendance"> | string
   studentId?: Prisma.StringFilter<"Attendance"> | string
   status?: Prisma.EnumAttendanceStatusFilter<"Attendance"> | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFilter<"Attendance"> | number
   createdAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
   session?: Prisma.XOR<Prisma.SessionScalarRelationFilter, Prisma.SessionWhereInput>
@@ -199,6 +241,7 @@ export type AttendanceOrderByWithRelationInput = {
   sessionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  amountCents?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   session?: Prisma.SessionOrderByWithRelationInput
@@ -214,6 +257,7 @@ export type AttendanceWhereUniqueInput = Prisma.AtLeast<{
   sessionId?: Prisma.StringFilter<"Attendance"> | string
   studentId?: Prisma.StringFilter<"Attendance"> | string
   status?: Prisma.EnumAttendanceStatusFilter<"Attendance"> | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFilter<"Attendance"> | number
   createdAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
   session?: Prisma.XOR<Prisma.SessionScalarRelationFilter, Prisma.SessionWhereInput>
@@ -225,11 +269,14 @@ export type AttendanceOrderByWithAggregationInput = {
   sessionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  amountCents?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AttendanceCountOrderByAggregateInput
+  _avg?: Prisma.AttendanceAvgOrderByAggregateInput
   _max?: Prisma.AttendanceMaxOrderByAggregateInput
   _min?: Prisma.AttendanceMinOrderByAggregateInput
+  _sum?: Prisma.AttendanceSumOrderByAggregateInput
 }
 
 export type AttendanceScalarWhereWithAggregatesInput = {
@@ -240,6 +287,7 @@ export type AttendanceScalarWhereWithAggregatesInput = {
   sessionId?: Prisma.StringWithAggregatesFilter<"Attendance"> | string
   studentId?: Prisma.StringWithAggregatesFilter<"Attendance"> | string
   status?: Prisma.EnumAttendanceStatusWithAggregatesFilter<"Attendance"> | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntWithAggregatesFilter<"Attendance"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Attendance"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Attendance"> | Date | string
 }
@@ -247,6 +295,7 @@ export type AttendanceScalarWhereWithAggregatesInput = {
 export type AttendanceCreateInput = {
   id?: string
   status: $Enums.AttendanceStatus
+  amountCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   session: Prisma.SessionCreateNestedOneWithoutAttendancesInput
@@ -258,6 +307,7 @@ export type AttendanceUncheckedCreateInput = {
   sessionId: string
   studentId: string
   status: $Enums.AttendanceStatus
+  amountCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -265,6 +315,7 @@ export type AttendanceUncheckedCreateInput = {
 export type AttendanceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumAttendanceStatusFieldUpdateOperationsInput | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   session?: Prisma.SessionUpdateOneRequiredWithoutAttendancesNestedInput
@@ -276,6 +327,7 @@ export type AttendanceUncheckedUpdateInput = {
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumAttendanceStatusFieldUpdateOperationsInput | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -285,6 +337,7 @@ export type AttendanceCreateManyInput = {
   sessionId: string
   studentId: string
   status: $Enums.AttendanceStatus
+  amountCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -292,6 +345,7 @@ export type AttendanceCreateManyInput = {
 export type AttendanceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumAttendanceStatusFieldUpdateOperationsInput | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -301,6 +355,7 @@ export type AttendanceUncheckedUpdateManyInput = {
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumAttendanceStatusFieldUpdateOperationsInput | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -325,8 +380,13 @@ export type AttendanceCountOrderByAggregateInput = {
   sessionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  amountCents?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type AttendanceAvgOrderByAggregateInput = {
+  amountCents?: Prisma.SortOrder
 }
 
 export type AttendanceMaxOrderByAggregateInput = {
@@ -334,6 +394,7 @@ export type AttendanceMaxOrderByAggregateInput = {
   sessionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  amountCents?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -343,8 +404,13 @@ export type AttendanceMinOrderByAggregateInput = {
   sessionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  amountCents?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type AttendanceSumOrderByAggregateInput = {
+  amountCents?: Prisma.SortOrder
 }
 
 export type AttendanceCreateNestedManyWithoutStudentInput = {
@@ -438,6 +504,7 @@ export type EnumAttendanceStatusFieldUpdateOperationsInput = {
 export type AttendanceCreateWithoutStudentInput = {
   id?: string
   status: $Enums.AttendanceStatus
+  amountCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   session: Prisma.SessionCreateNestedOneWithoutAttendancesInput
@@ -447,6 +514,7 @@ export type AttendanceUncheckedCreateWithoutStudentInput = {
   id?: string
   sessionId: string
   status: $Enums.AttendanceStatus
+  amountCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -485,6 +553,7 @@ export type AttendanceScalarWhereInput = {
   sessionId?: Prisma.StringFilter<"Attendance"> | string
   studentId?: Prisma.StringFilter<"Attendance"> | string
   status?: Prisma.EnumAttendanceStatusFilter<"Attendance"> | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFilter<"Attendance"> | number
   createdAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
 }
@@ -492,6 +561,7 @@ export type AttendanceScalarWhereInput = {
 export type AttendanceCreateWithoutSessionInput = {
   id?: string
   status: $Enums.AttendanceStatus
+  amountCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   student: Prisma.StudentCreateNestedOneWithoutAttendancesInput
@@ -501,6 +571,7 @@ export type AttendanceUncheckedCreateWithoutSessionInput = {
   id?: string
   studentId: string
   status: $Enums.AttendanceStatus
+  amountCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -535,6 +606,7 @@ export type AttendanceCreateManyStudentInput = {
   id?: string
   sessionId: string
   status: $Enums.AttendanceStatus
+  amountCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -542,6 +614,7 @@ export type AttendanceCreateManyStudentInput = {
 export type AttendanceUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumAttendanceStatusFieldUpdateOperationsInput | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   session?: Prisma.SessionUpdateOneRequiredWithoutAttendancesNestedInput
@@ -551,6 +624,7 @@ export type AttendanceUncheckedUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumAttendanceStatusFieldUpdateOperationsInput | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -559,6 +633,7 @@ export type AttendanceUncheckedUpdateManyWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumAttendanceStatusFieldUpdateOperationsInput | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -567,6 +642,7 @@ export type AttendanceCreateManySessionInput = {
   id?: string
   studentId: string
   status: $Enums.AttendanceStatus
+  amountCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -574,6 +650,7 @@ export type AttendanceCreateManySessionInput = {
 export type AttendanceUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumAttendanceStatusFieldUpdateOperationsInput | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.StudentUpdateOneRequiredWithoutAttendancesNestedInput
@@ -583,6 +660,7 @@ export type AttendanceUncheckedUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumAttendanceStatusFieldUpdateOperationsInput | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -591,6 +669,7 @@ export type AttendanceUncheckedUpdateManyWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumAttendanceStatusFieldUpdateOperationsInput | $Enums.AttendanceStatus
+  amountCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -602,6 +681,7 @@ export type AttendanceSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   sessionId?: boolean
   studentId?: boolean
   status?: boolean
+  amountCents?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   session?: boolean | Prisma.SessionDefaultArgs<ExtArgs>
@@ -613,6 +693,7 @@ export type AttendanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   sessionId?: boolean
   studentId?: boolean
   status?: boolean
+  amountCents?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   session?: boolean | Prisma.SessionDefaultArgs<ExtArgs>
@@ -624,6 +705,7 @@ export type AttendanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   sessionId?: boolean
   studentId?: boolean
   status?: boolean
+  amountCents?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   session?: boolean | Prisma.SessionDefaultArgs<ExtArgs>
@@ -635,11 +717,12 @@ export type AttendanceSelectScalar = {
   sessionId?: boolean
   studentId?: boolean
   status?: boolean
+  amountCents?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AttendanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "studentId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["attendance"]>
+export type AttendanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "studentId" | "status" | "amountCents" | "createdAt" | "updatedAt", ExtArgs["result"]["attendance"]>
 export type AttendanceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   session?: boolean | Prisma.SessionDefaultArgs<ExtArgs>
   student?: boolean | Prisma.StudentDefaultArgs<ExtArgs>
@@ -664,6 +747,7 @@ export type $AttendancePayload<ExtArgs extends runtime.Types.Extensions.Internal
     sessionId: string
     studentId: string
     status: $Enums.AttendanceStatus
+    amountCents: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["attendance"]>
@@ -1095,6 +1179,7 @@ export interface AttendanceFieldRefs {
   readonly sessionId: Prisma.FieldRef<"Attendance", 'String'>
   readonly studentId: Prisma.FieldRef<"Attendance", 'String'>
   readonly status: Prisma.FieldRef<"Attendance", 'AttendanceStatus'>
+  readonly amountCents: Prisma.FieldRef<"Attendance", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Attendance", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Attendance", 'DateTime'>
 }

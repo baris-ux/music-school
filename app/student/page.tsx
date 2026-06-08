@@ -91,10 +91,19 @@ export default async function StudentPage() {
     }))
   );
 
-  const pendingPricing = await prisma.pricingConfig.findFirst({
-    where: { appliedAt: null },
-    orderBy: { createdAt: "desc" },
-  });
+  const [activePricing, pendingPricing] = await Promise.all([
+    prisma.pricingConfig.findFirst({
+      where: { appliedAt: { not: null } },
+      orderBy: { appliedAt: "desc" },
+    }),
+    prisma.pricingConfig.findFirst({
+      where: { appliedAt: null },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
+
+  const perSessionLabel = ((activePricing?.perSessionCents ?? 1750) / 100).toLocaleString("fr-BE", { minimumFractionDigits: 2 }) + " €";
+  const monthlyLabel = ((activePricing?.monthlyCents ?? 5000) / 100).toLocaleString("fr-BE", { minimumFractionDigits: 2 }) + " €";
 
   const upcomingSessions = await prisma.session.findMany({
     where: {
@@ -163,11 +172,11 @@ export default async function StudentPage() {
 
           <div className="flex items-center gap-2">
             <span className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-              Actuel : {student.paymentMode === "PER_SESSION" ? "À la séance (17,50 €)" : "Mensuel (50 €/mois)"}
+              Actuel : {student.paymentMode === "PER_SESSION" ? `À la séance (${perSessionLabel})` : `Mensuel (${monthlyLabel}/mois)`}
             </span>
             {student.pendingPaymentMode && (
               <span className="inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
-                Dès le 1er du mois : {student.pendingPaymentMode === "PER_SESSION" ? "À la séance (17,50 €)" : "Mensuel (50 €/mois)"}
+                Dès le 1er du mois : {student.pendingPaymentMode === "PER_SESSION" ? `À la séance (${perSessionLabel})` : `Mensuel (${monthlyLabel}/mois)`}
               </span>
             )}
           </div>
@@ -178,8 +187,8 @@ export default async function StudentPage() {
               defaultValue={student.pendingPaymentMode ?? student.paymentMode}
               className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-300"
             >
-              <option value="PER_SESSION">À la séance — 17,50 € par cours assisté</option>
-              <option value="MONTHLY">Mensuel — 50 € par mois</option>
+              <option value="PER_SESSION">À la séance — {perSessionLabel} par cours assisté</option>
+              <option value="MONTHLY">Mensuel — {monthlyLabel} par mois</option>
             </select>
             <button
               type="submit"
@@ -218,7 +227,9 @@ export default async function StudentPage() {
                     })}
                   </p>
                 </div>
-                <span className="text-sm font-semibold text-slate-800">10,00 €</span>
+                <span className="text-sm font-semibold text-slate-800">
+                  {(attendance.amountCents / 100).toLocaleString("fr-BE", { minimumFractionDigits: 2 })} €
+                </span>
               </div>
             ))}
             <div className="flex items-center justify-between border-t border-slate-200 pt-3 mt-2">
@@ -297,11 +308,12 @@ export default async function StudentPage() {
                     <p className="text-sm text-slate-700">{resource.description}</p>
                   )}
                 </div>
-                <a>
+                <a
                   href={resource.downloadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm font-medium text-blue-600 hover:underline"
+                >
                   Télécharger
                 </a>
               </div>

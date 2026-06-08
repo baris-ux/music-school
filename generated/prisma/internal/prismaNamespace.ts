@@ -1677,6 +1677,7 @@ export const AttendanceScalarFieldEnum = {
   sessionId: 'sessionId',
   studentId: 'studentId',
   status: 'status',
+  amountCents: 'amountCents',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

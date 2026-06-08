@@ -37,58 +37,62 @@ export async function saveAttendance(
 ) {
   await Promise.all(
     records.map(async (record) => {
-      // Récupère l'ancienne présence si elle existe
       const existing = await prisma.attendance.findUnique({
-        where: {
-          sessionId_studentId: {
-            sessionId,
-            studentId: record.studentId,
-          },
-        },
+        where: { sessionId_studentId: { sessionId, studentId: record.studentId } },
       });
 
       const wasPresent = existing?.status === "PRESENT";
       const isNowPresent = record.status === "PRESENT";
-
-      await prisma.attendance.upsert({
-        where: {
-          sessionId_studentId: {
-            sessionId,
-            studentId: record.studentId,
-          },
-        },
-        update: { status: record.status },
-        create: {
-          sessionId,
-          studentId: record.studentId,
-          status: record.status,
-        },
-      });
 
       const student = await prisma.student.findUnique({
         where: { id: record.studentId },
         select: { balance: true, paymentMode: true },
       });
 
-      // Le mode MONTHLY ne génère pas de facturation à la séance
-      if (student?.paymentMode === "MONTHLY") return;
+      // MONTHLY : pas de facturation à la séance
+      if (student?.paymentMode === "MONTHLY") {
+        await prisma.attendance.upsert({
+          where: { sessionId_studentId: { sessionId, studentId: record.studentId } },
+          update: { status: record.status, amountCents: 0 },
+          create: { sessionId, studentId: record.studentId, status: record.status, amountCents: 0 },
+        });
+        return;
+      }
 
-      const pricing = await prisma.pricingConfig.findFirst({
-        where: { appliedAt: { not: null } },
-        orderBy: { appliedAt: "desc" },
+      // PER_SESSION : calcule le montant à stocker
+      let amountCents: number;
+      if (isNowPresent && wasPresent) {
+        // Statut inchangé : préserve le montant déjà enregistré
+        amountCents = existing?.amountCents ?? 0;
+      } else if (isNowPresent) {
+        // Nouvelle présence : tarif actif au moment du marquage
+        const pricing = await prisma.pricingConfig.findFirst({
+          where: { appliedAt: { not: null } },
+          orderBy: { appliedAt: "desc" },
+        });
+        amountCents = pricing?.perSessionCents ?? 1750;
+      } else {
+        amountCents = 0;
+      }
+
+      await prisma.attendance.upsert({
+        where: { sessionId_studentId: { sessionId, studentId: record.studentId } },
+        update: { status: record.status, amountCents },
+        create: { sessionId, studentId: record.studentId, status: record.status, amountCents },
       });
-      const PRICE = pricing?.perSessionCents ?? 1750;
 
       if (!wasPresent && isNowPresent) {
         await prisma.student.update({
           where: { id: record.studentId },
-          data: { balance: { increment: PRICE } },
+          data: { balance: { increment: amountCents } },
         });
       } else if (wasPresent && !isNowPresent) {
-        if (student && student.balance >= PRICE) {
+        // Utilise le montant original enregistré pour annuler exactement ce qui avait été facturé
+        const charged = existing?.amountCents ?? 0;
+        if (student && charged > 0 && student.balance >= charged) {
           await prisma.student.update({
             where: { id: record.studentId },
-            data: { balance: { decrement: PRICE } },
+            data: { balance: { decrement: charged } },
           });
         }
       }

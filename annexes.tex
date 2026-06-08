@@ -1,0 +1,547 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+
+\geometry{margin=2.5cm}
+
+\setlength{\parskip}{0.8em}
+\setlength{\parindent}{0pt}
+
+% Style pour le code source
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!8},
+  keywordstyle=\color{blue!70!black}\bfseries,
+  commentstyle=\color{green!50!black}\itshape,
+  stringstyle=\color{orange!80!black},
+  numberstyle=\tiny\color{gray},
+  numbers=left,
+  numbersep=8pt,
+  showstringspaces=false,
+  tabsize=2,
+}
+
+% Numérotation des sections en chiffres romains
+\renewcommand{\thesection}{\Roman{section}}
+
+\title{\textbf{Annexes}\\[0.4em]
+\large Développement d'une application web pour la gestion d'une école de musique}
+\author{Baris Ozcelik}
+\date{Année académique 2025--2026}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ─────────────────────────────────────────────
+\section{Schéma de la base de données (Prisma)}
+% ─────────────────────────────────────────────
+
+Le schéma suivant correspond au fichier \texttt{prisma/schema.prisma} du projet.
+Il définit l'ensemble des modèles, relations et énumérations utilisés par l'application.
+
+\begin{lstlisting}[language=,caption={prisma/schema.prisma}]
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String?
+  role         Role
+  createdAt    DateTime @default(now())
+
+  invitationToken   String?   @unique
+  tokenExpiresAt    DateTime?
+  isActive          Boolean   @default(false)
+
+  resetToken          String?   @unique
+  resetTokenExpiresAt DateTime?
+
+  student Student?
+}
+
+enum PaymentMode {
+  PER_SESSION
+  MONTHLY
+}
+
+model Student {
+  id          String      @id @default(uuid())
+  userId      String      @unique
+  firstName   String
+  lastName    String
+  phoneNumber String?
+  balance            Int         @default(0)
+  paymentMode        PaymentMode @default(PER_SESSION)
+  pendingPaymentMode PaymentMode?
+
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollments Enrollment[]
+  attendances Attendance[]
+  accesses    ResourceAccess[]
+  paymentRequested Boolean @default(false)
+}
+
+model Course {
+  id        String   @id @default(uuid())
+  title     String
+  capacity  Int
+  createdAt DateTime @default(now())
+
+  enrollments         Enrollment[]
+  sessions            Session[]
+  inscriptionRequests InscriptionRequestCourse[]
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  studentId String
+  courseId  String
+  createdAt DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course  Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  @@unique([studentId, courseId])
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  location    String
+  startAt     DateTime
+  endAt       DateTime?
+  price       Int
+  capacity    Int
+  createdAt   DateTime  @default(now())
+
+  tickets   Ticket[]
+  order     Order[]
+  scanToken ScanToken?
+}
+
+model Order {
+  id              String   @id @default(uuid())
+  email           String
+  amount          Int
+  status          String
+  stripeSessionId String?  @unique
+  eventId         String
+  createdAt       DateTime @default(now())
+
+  event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tickets Ticket[]
+}
+
+model Ticket {
+  id      String    @id @default(uuid())
+  qrCode  String    @unique
+  usedAt  DateTime?
+  orderId String
+  eventId String
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+enum SessionStatus {
+  PLANNED
+  CANCELLED
+  COMPLETED
+}
+
+model Session {
+  id        String        @id @default(uuid())
+  courseId  String
+  startsAt  DateTime
+  endsAt    DateTime
+  hours     Int
+  status    SessionStatus @default(PLANNED)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  attendances Attendance[]
+  @@index([courseId, startsAt])
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+model Attendance {
+  id        String           @id @default(uuid())
+  sessionId String
+  studentId String
+  status    AttendanceStatus
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  @@unique([sessionId, studentId])
+}
+
+enum InscriptionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model InscriptionRequest {
+  id              String            @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String            @unique
+  phoneNumber     String?
+  isParent        Boolean           @default(false)
+  parentFirstName String?
+  parentLastName  String?
+  message         String?
+  status          InscriptionStatus @default(PENDING)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  courses InscriptionRequestCourse[]
+}
+
+model InscriptionRequestCourse {
+  id                   String @id @default(uuid())
+  inscriptionRequestId String
+  courseId             String
+
+  inscriptionRequest InscriptionRequest @relation(
+    fields: [inscriptionRequestId], references: [id], onDelete: Cascade)
+  course Course @relation(
+    fields: [courseId], references: [id], onDelete: Cascade)
+  @@unique([inscriptionRequestId, courseId])
+}
+
+model PricingConfig {
+  id              String    @id @default(uuid())
+  perSessionCents Int
+  monthlyCents    Int
+  effectiveFrom   DateTime
+  appliedAt       DateTime?
+  createdAt       DateTime  @default(now())
+}
+
+model ScanToken {
+  id        String   @id @default(uuid())
+  token     String   @unique @default(uuid())
+  eventId   String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Resource {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  fileUrl     String
+  fileName    String
+  createdAt   DateTime @default(now())
+
+  accesses ResourceAccess[]
+}
+
+model ResourceAccess {
+  id         String   @id @default(uuid())
+  resourceId String
+  studentId  String
+  createdAt  DateTime @default(now())
+
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  @@unique([resourceId, studentId])
+}
+\end{lstlisting}
+
+\newpage
+
+% ─────────────────────────────────────────────
+\section{Variables d'environnement}
+% ─────────────────────────────────────────────
+
+Le tableau suivant liste l'ensemble des variables d'environnement requises pour le
+bon fonctionnement de l'application, ainsi que leur rôle. Ces variables sont à
+configurer dans un fichier \texttt{.env} en environnement local et dans le tableau
+de bord \textit{Vercel} en production.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{>{\ttfamily}p{5.5cm} p{8.5cm}}
+\toprule
+\textbf{Variable} & \textbf{Description} \\
+\midrule
+DATABASE\_URL      & URL de connexion poolée à la base PostgreSQL (Neon). Utilisée par Prisma pour les requêtes applicatives. \\
+DIRECT\_URL        & URL de connexion directe (sans pooler). Utilisée uniquement lors des migrations Prisma. \\
+SESSION\_SECRET    & Clé secrète (min. 32 caractères) utilisée par Iron Session pour signer et chiffrer les cookies de session. \\
+STRIPE\_SECRET\_KEY      & Clé secrète Stripe pour les appels API côté serveur (création de sessions de paiement). \\
+STRIPE\_WEBHOOK\_SECRET  & Secret de validation des webhooks Stripe, permettant de vérifier l'authenticité des notifications reçues. \\
+RESEND\_API\_KEY   & Clé d'accès au service d'envoi d'e-mails Resend. \\
+BLOB\_READ\_WRITE\_TOKEN  & Token d'accès à Vercel Blob pour l'upload et la récupération des partitions PDF. \\
+APP\_URL           & URL publique de l'application (ex. \texttt{https://mon-app.vercel.app}). Utilisée pour générer les liens d'activation et de réinitialisation de mot de passe. \\
+\bottomrule
+\end{tabular}
+\caption{Variables d'environnement de l'application}
+\end{table}
+
+\newpage
+
+% ─────────────────────────────────────────────
+\section{Configuration du pipeline CI/CD}
+% ─────────────────────────────────────────────
+
+Le fichier suivant correspond à la configuration GitHub Actions du pipeline
+d'intégration continue (\texttt{.github/workflows/ci.yml}).
+Il est déclenché à chaque \textit{push} sur la branche \texttt{main} ainsi
+qu'à chaque \textit{pull request}, et exécute successivement l'installation
+des dépendances et la compilation du projet.
+
+\begin{lstlisting}[language=,caption={.github/workflows/ci.yml}]
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+\end{lstlisting}
+
+\newpage
+
+% ─────────────────────────────────────────────
+\section{Configuration des tests unitaires}
+% ─────────────────────────────────────────────
+
+Le fichier suivant correspond à la configuration de \textit{Vitest},
+l'outil utilisé pour les tests unitaires du projet (\texttt{vitest.config.ts}).
+
+\begin{lstlisting}[language=,caption={vitest.config.ts}]
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "node:path";
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./vitest.setup.ts"],
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "."),
+    },
+  },
+});
+\end{lstlisting}
+
+Le tableau suivant récapitule les fichiers de tests unitaires rédigés dans le cadre
+du projet, organisés par domaine fonctionnel.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{8cm} p{6cm}}
+\toprule
+\textbf{Fichier de test} & \textbf{Fonctionnalité couverte} \\
+\midrule
+\texttt{test/api/login.test.ts}            & Authentification (identifiants, session) \\
+\texttt{test/api/activation.test.ts}       & Activation de compte via lien d'invitation \\
+\texttt{test/api/reset-password.test.ts}   & Réinitialisation du mot de passe \\
+\texttt{test/api/forgot-password.test.ts}  & Demande de réinitialisation \\
+\texttt{test/api/ticket-validate.test.ts}  & Validation des billets (ScanToken) \\
+\texttt{test/admin/sessions.test.ts}       & Création et gestion des séances \\
+\texttt{test/admin/attendance.test.ts}     & Enregistrement des présences et solde \\
+\texttt{test/admin/inscriptions.test.ts}   & Traitement des demandes d'inscription \\
+\texttt{test/lib/session.test.ts}          & Gestion des sessions Iron Session \\
+\texttt{test/basic.test.ts}               & Tests de base \\
+\bottomrule
+\end{tabular}
+\caption{Récapitulatif des fichiers de tests unitaires (54 tests, 10 fichiers)}
+\end{table}
+
+\newpage
+
+% ─────────────────────────────────────────────
+\section{Arborescence du projet}
+% ─────────────────────────────────────────────
+
+L'arborescence suivante présente la structure générale du projet,
+en excluant les répertoires générés automatiquement
+(\texttt{node\_modules}, \texttt{.next}, \texttt{generated}, \texttt{coverage}).
+
+\begin{lstlisting}[language=,caption={Structure du projet (71 répertoires, 133 fichiers)},basicstyle=\ttfamily\footnotesize]
+.
+├── app/
+│   ├── activation/          # Activation de compte via lien d'invitation
+│   ├── admin/               # Interface d'administration
+│   │   ├── courses/         # Gestion des cours
+│   │   ├── events/          # Gestion des événements
+│   │   ├── inscriptions/    # Traitement des demandes d'inscription
+│   │   ├── ressources/      # Gestion des partitions PDF
+│   │   ├── sessions/        # Planification des séances
+│   │   │   └── [id]/attendance/  # Présences par séance
+│   │   ├── students/        # Gestion des élèves
+│   │   ├── tarifs/          # Configuration des tarifs
+│   │   ├── layout.tsx
+│   │   └── page.tsx         # Tableau de bord admin
+│   ├── api/                 # API Routes (logique serveur)
+│   │   ├── cron/billing/    # Facturation mensuelle automatique
+│   │   ├── login/           # Authentification
+│   │   ├── resources/[id]/  # Accès protégé aux partitions PDF
+│   │   ├── stripe/webhook/  # Webhook de confirmation de paiement
+│   │   └── ticket/validate/ # Validation des billets QR code
+│   ├── components/          # Composants React partagés
+│   ├── contact/             # Formulaire de contact public
+│   ├── event/               # Pages publiques des événements
+│   │   └── [id]/checkout/   # Flux de paiement Stripe
+│   ├── forgot-password/     # Demande de réinitialisation
+│   ├── inscription/         # Formulaire d'inscription public
+│   ├── login/               # Page de connexion
+│   ├── logout/              # Route de déconnexion
+│   ├── reset-password/      # Réinitialisation du mot de passe
+│   ├── scan/[token]/        # Scan QR code (accès temporaire staff)
+│   ├── student/             # Espace personnel de l'élève
+│   ├── tarifs/              # Page publique des tarifs
+│   └── layout.tsx           # Layout racine de l'application
+├── lib/                     # Utilitaires partagés
+│   ├── email.ts             # Envoi d'e-mails via Resend
+│   ├── prisma.ts            # Client Prisma (singleton)
+│   ├── session.ts           # Gestion des sessions Iron Session
+│   ├── ticket-pdf.ts        # Génération des billets PDF avec QR code
+│   └── translations.ts      # Internationalisation FR/TR
+├── prisma/
+│   ├── migrations/          # Historique des migrations de base de données
+│   └── schema.prisma        # Schéma de la base de données
+├── public/                  # Fichiers statiques (images, icônes)
+├── scripts/
+│   └── seed.ts              # Script d'initialisation de la base de données
+├── test/                    # Tests unitaires (Vitest)
+│   ├── admin/               # Tests de la logique admin
+│   ├── api/                 # Tests des API Routes
+│   └── lib/                 # Tests des utilitaires
+├── next.config.ts           # Configuration Next.js
+├── vitest.config.ts         # Configuration Vitest
+└── package.json
+\end{lstlisting}
+
+\newpage
+
+% ─────────────────────────────────────────────
+\section{Captures d'écran de l'application}
+% ─────────────────────────────────────────────
+
+Cette annexe présente les principales interfaces de l'application,
+illustrant les vues destinées à l'administrateur et à l'élève.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{dashboard-admin.png}
+    \caption{Tableau de bord administrateur}
+    \label{fig:dashboard-admin}
+\end{figure}
+
+\newpage
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{dashboard-etudiant.png}
+    \caption{Espace personnel de l'élève}
+    \label{fig:dashboard-etudiant}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth, height=0.88\textheight, keepaspectratio]{formulaire-inscription.png}
+    \caption{Formulaire d'inscription — vue adulte}
+    \label{fig:inscription-adulte}
+\end{figure}
+
+\newpage
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth, height=0.88\textheight, keepaspectratio]{inscription_pour_enfant.png}
+    \caption{Formulaire d'inscription — vue parent (inscription d'un mineur)}
+    \label{fig:inscription-parent}
+\end{figure}
+
+\newpage
+
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=\linewidth]{presences.png}
+%   \caption{Gestion des présences d'une séance}
+%   \label{fig:presences}
+% \end{figure}
+
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=\linewidth]{inscriptions.png}
+%   \caption{Gestion des demandes d'inscription}
+%   \label{fig:inscriptions}
+% \end{figure}
+
+\end{document}

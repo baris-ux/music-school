@@ -140,14 +140,15 @@ enum SessionStatus {
 
 
 model Attendance {
-  id        String           @id @default(uuid())
-  sessionId String
-  studentId String
-  status    AttendanceStatus
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  session   Session          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  student   Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id           String           @id @default(uuid())
+  sessionId    String
+  studentId    String
+  status       AttendanceStatus
+  amountCents  Int              @default(0)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  session      Session          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student      Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
   @@unique([sessionId, studentId])
 }
 

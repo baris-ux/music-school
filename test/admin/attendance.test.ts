@@ -6,6 +6,7 @@ vi.mock("@/lib/prisma", () => ({
     enrollment: { findMany: vi.fn() },
     attendance: { findUnique: vi.fn(), upsert: vi.fn() },
     student: { findUnique: vi.fn(), update: vi.fn() },
+    pricingConfig: { findFirst: vi.fn() },
   },
 }));
 
@@ -22,6 +23,9 @@ const mockFindAttendance = vi.mocked(prisma.attendance.findUnique);
 const mockUpsertAttendance = vi.mocked(prisma.attendance.upsert);
 const mockFindStudent = vi.mocked(prisma.student.findUnique);
 const mockUpdateStudent = vi.mocked(prisma.student.update);
+const mockFindPricing = vi.mocked(prisma.pricingConfig.findFirst);
+
+const PRICE = 1750;
 
 describe("getSessionWithAttendance", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -42,40 +46,49 @@ describe("getSessionWithAttendance", () => {
 });
 
 describe("saveAttendance", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUpsertAttendance.mockResolvedValue({} as any);
+    mockFindPricing.mockResolvedValue({ perSessionCents: PRICE } as any);
+  });
 
   it("crée une présence et incrémente le solde si nouvel étudiant PRESENT", async () => {
     mockFindAttendance.mockResolvedValue(null);
-    mockUpsertAttendance.mockResolvedValue({} as any);
+    mockFindStudent.mockResolvedValue({ balance: 0, paymentMode: "PER_SESSION" } as any);
     mockUpdateStudent.mockResolvedValue({} as any);
 
     await saveAttendance("s-1", [{ studentId: "st-1", status: "PRESENT" }]);
 
     expect(mockUpsertAttendance).toHaveBeenCalledWith(
-      expect.objectContaining({ create: expect.objectContaining({ status: "PRESENT" }) })
+      expect.objectContaining({
+        create: expect.objectContaining({ status: "PRESENT", amountCents: PRICE }),
+      })
     );
     expect(mockUpdateStudent).toHaveBeenCalledWith(
-      expect.objectContaining({ data: { balance: { increment: 1000 } } })
+      expect.objectContaining({ data: { balance: { increment: PRICE } } })
     );
   });
 
-  it("décrémente le solde si un étudiant passe de PRESENT à ABSENT et que le solde est suffisant", async () => {
-    mockFindAttendance.mockResolvedValue({ status: "PRESENT" } as any);
-    mockUpsertAttendance.mockResolvedValue({} as any);
-    mockFindStudent.mockResolvedValue({ balance: 2000 } as any);
+  it("décrémente le solde du montant original si un étudiant passe de PRESENT à ABSENT", async () => {
+    mockFindAttendance.mockResolvedValue({ status: "PRESENT", amountCents: PRICE } as any);
+    mockFindStudent.mockResolvedValue({ balance: PRICE * 2, paymentMode: "PER_SESSION" } as any);
     mockUpdateStudent.mockResolvedValue({} as any);
 
     await saveAttendance("s-1", [{ studentId: "st-1", status: "ABSENT" }]);
 
+    expect(mockUpsertAttendance).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: expect.objectContaining({ amountCents: 0 }),
+      })
+    );
     expect(mockUpdateStudent).toHaveBeenCalledWith(
-      expect.objectContaining({ data: { balance: { decrement: 1000 } } })
+      expect.objectContaining({ data: { balance: { decrement: PRICE } } })
     );
   });
 
   it("ne décrémente pas le solde si le solde est insuffisant (protection contre solde négatif)", async () => {
-    mockFindAttendance.mockResolvedValue({ status: "PRESENT" } as any);
-    mockUpsertAttendance.mockResolvedValue({} as any);
-    mockFindStudent.mockResolvedValue({ balance: 0 } as any);
+    mockFindAttendance.mockResolvedValue({ status: "PRESENT", amountCents: PRICE } as any);
+    mockFindStudent.mockResolvedValue({ balance: 0, paymentMode: "PER_SESSION" } as any);
 
     await saveAttendance("s-1", [{ studentId: "st-1", status: "ABSENT" }]);
 
@@ -83,17 +96,50 @@ describe("saveAttendance", () => {
   });
 
   it("ne modifie pas le solde si le statut ne change pas (ABSENT → ABSENT)", async () => {
-    mockFindAttendance.mockResolvedValue({ status: "ABSENT" } as any);
-    mockUpsertAttendance.mockResolvedValue({} as any);
+    mockFindAttendance.mockResolvedValue({ status: "ABSENT", amountCents: 0 } as any);
+    mockFindStudent.mockResolvedValue({ balance: 0, paymentMode: "PER_SESSION" } as any);
 
     await saveAttendance("s-1", [{ studentId: "st-1", status: "ABSENT" }]);
 
     expect(mockUpdateStudent).not.toHaveBeenCalled();
   });
 
+  it("ne modifie pas le solde pour un étudiant en paiement mensuel et stocke amountCents=0", async () => {
+    mockFindAttendance.mockResolvedValue(null);
+    mockFindStudent.mockResolvedValue({ balance: 0, paymentMode: "MONTHLY" } as any);
+
+    await saveAttendance("s-1", [{ studentId: "st-1", status: "PRESENT" }]);
+
+    expect(mockUpdateStudent).not.toHaveBeenCalled();
+    expect(mockFindPricing).not.toHaveBeenCalled();
+    expect(mockUpsertAttendance).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ amountCents: 0 }),
+      })
+    );
+  });
+
+  it("utilise le prix par défaut (1750) si aucune configuration tarifaire n'est trouvée", async () => {
+    mockFindAttendance.mockResolvedValue(null);
+    mockFindStudent.mockResolvedValue({ balance: 0, paymentMode: "PER_SESSION" } as any);
+    mockFindPricing.mockResolvedValue(null);
+    mockUpdateStudent.mockResolvedValue({} as any);
+
+    await saveAttendance("s-1", [{ studentId: "st-1", status: "PRESENT" }]);
+
+    expect(mockUpsertAttendance).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ amountCents: 1750 }),
+      })
+    );
+    expect(mockUpdateStudent).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { balance: { increment: 1750 } } })
+    );
+  });
+
   it("retourne success true après sauvegarde", async () => {
     mockFindAttendance.mockResolvedValue(null);
-    mockUpsertAttendance.mockResolvedValue({} as any);
+    mockFindStudent.mockResolvedValue({ balance: 0, paymentMode: "PER_SESSION" } as any);
 
     const result = await saveAttendance("s-1", [{ studentId: "st-1", status: "EXCUSED" }]);
     expect(result.success).toBe(true);
