@@ -2,8 +2,14 @@
 
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { sendInscriptionConfirmationEmail } from "@/lib/email";
 
-export async function soumettreInscription(formData: FormData) {
+export type InscriptionState = { error?: string };
+
+export async function soumettreInscription(
+  _prevState: InscriptionState,
+  formData: FormData
+): Promise<InscriptionState> {
   const firstName = String(formData.get("firstName") ?? "").trim();
   const lastName = String(formData.get("lastName") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
@@ -16,11 +22,19 @@ export async function soumettreInscription(formData: FormData) {
   const gdprConsent = formData.get("gdprConsent") === "on";
 
   if (!firstName || !lastName || !email) {
-    throw new Error("Champs obligatoires manquants");
+    return { error: "Veuillez remplir tous les champs obligatoires." };
+  }
+
+  if (isParent && (!parentFirstName || !parentLastName)) {
+    return { error: "Veuillez renseigner le prénom et le nom du parent." };
+  }
+
+  if (courseIds.length === 0) {
+    return { error: "Veuillez sélectionner au moins un cours." };
   }
 
   if (!gdprConsent) {
-    throw new Error("Le consentement RGPD est requis");
+    return { error: "Vous devez accepter le traitement de vos données pour continuer." };
   }
 
   const existing = await prisma.inscriptionRequest.findUnique({
@@ -28,7 +42,7 @@ export async function soumettreInscription(formData: FormData) {
   });
 
   if (existing) {
-    throw new Error("Une demande existe déjà pour cet email");
+    return { error: "Une demande d'inscription existe déjà pour cette adresse e-mail." };
   }
 
   await prisma.inscriptionRequest.create({
@@ -41,11 +55,15 @@ export async function soumettreInscription(formData: FormData) {
       isParent,
       parentFirstName: isParent ? parentFirstName || null : null,
       parentLastName: isParent ? parentLastName || null : null,
-      courses: courseIds.length > 0
-        ? { create: courseIds.map((courseId) => ({ courseId })) }
-        : undefined,
+      courses: { create: courseIds.map((courseId) => ({ courseId })) },
     },
   });
+
+  try {
+    await sendInscriptionConfirmationEmail({ to: email, firstName });
+  } catch (err) {
+    console.error("Échec envoi email de confirmation d'inscription", err);
+  }
 
   redirect("/inscription/confirmation");
 }

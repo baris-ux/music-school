@@ -29,13 +29,13 @@ export async function sendInvitationEmail({
   const lien = `${process.env.NEXT_PUBLIC_APP_URL}/activation?token=${token}`;
 
   const result = await resend.emails.send({
-    from: "Académie de Musique <onboarding@resend.dev>",
+    from: "École de Musique <onboarding@resend.dev>",
     to,
     subject: "Bienvenue — Activez votre compte",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: auto;">
         <h2>Bonjour ${firstName},</h2>
-        <p>Votre demande d'inscription à l'Académie de Musique a été acceptée.</p>
+        <p>Votre demande d'inscription à l'école de musique a été acceptée.</p>
         <p>Cliquez sur le bouton ci-dessous pour choisir votre mot de passe et accéder à votre espace étudiant :</p>
         <a href="${lien}" style="display:inline-block;margin-top:16px;background:#0f172a;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-size:14px;">
           Activer mon compte
@@ -48,6 +48,35 @@ export async function sendInvitationEmail({
   });
 
   void result;
+}
+
+export async function sendInscriptionConfirmationEmail({
+  to,
+  firstName,
+}: {
+  to: string;
+  firstName: string;
+}) {
+  if (!resend) {
+    console.warn("RESEND_API_KEY manquant — email non envoyé");
+    return;
+  }
+
+  await resend.emails.send({
+    from: "École de Musique <onboarding@resend.dev>",
+    to,
+    subject: "Votre demande d'inscription a bien été reçue",
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: auto;">
+        <h2>Bonjour ${escapeHtml(firstName)},</h2>
+        <p>Nous avons bien reçu votre demande d'inscription à l'école de musique.</p>
+        <p>Notre équipe va l'examiner et vous contactera prochainement pour vous donner la suite à donner.</p>
+        <p style="margin-top:24px;font-size:12px;color:#94a3b8;">
+          Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.
+        </p>
+      </div>
+    `,
+  });
 }
 
 export async function sendContactEmail({
@@ -65,7 +94,7 @@ export async function sendContactEmail({
   }
 
   await resend.emails.send({
-    from: "Académie de Musique <onboarding@resend.dev>",
+    from: "École de Musique <onboarding@resend.dev>",
     to: "vedatbayer06@hotmail.com",
     subject: `Nouveau message de ${name}`,
     html: `
@@ -96,7 +125,7 @@ export async function sendResetPasswordEmail({
   const lien = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`;
 
   await resend.emails.send({
-    from: "Académie de Musique <onboarding@resend.dev>",
+    from: "École de Musique <onboarding@resend.dev>",
     to,
     subject: "Réinitialisation de votre mot de passe",
     html: `

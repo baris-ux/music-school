@@ -110,7 +110,13 @@ export const translations = {
       per_session_unit: "/ séance",
       monthly_unit: "/ mois",
       pending_from: "Nouveaux tarifs à partir du",
-    
+
+    },
+    inscription_confirmation: {
+      title: "Demande envoyée !",
+      message: "Votre demande d'inscription a bien été reçue. L'équipe de l'académie va l'examiner et vous recevrez un email avec la suite à donner.",
+      email_sent: "Un email de confirmation vient de vous être envoyé.",
+      back_home: "Retour à l'accueil",
     },
   },
   tr: {
@@ -224,6 +230,12 @@ export const translations = {
       per_session_unit: "/ ders",
       monthly_unit: "/ ay",
       pending_from: "Yeni ücretler geçerlilik tarihi:",
+    },
+    inscription_confirmation: {
+      title: "Talebiniz gönderildi!",
+      message: "Kayıt talebiniz alındı. Akademi ekibi inceledikten sonra size geri dönecektir.",
+      email_sent: "Bir onay e-postası gönderildi.",
+      back_home: "Ana sayfaya dön",
     },
   },
 };
