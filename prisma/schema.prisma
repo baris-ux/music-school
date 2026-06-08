@@ -50,7 +50,8 @@ model Student {
 
   accesses ResourceAccess[]
 
-  paymentRequested Boolean @default(false)
+  paymentRequested        Boolean @default(false)
+  paymentMethodDeclared   String? // "CASH" ou "TRANSFER"
 }
 
 model Course {
@@ -87,8 +88,8 @@ model Event {
   price       Int
   capacity    Int
   createdAt   DateTime @default(now())
-  tickets     Ticket[]
-  order       Order[]
+  tickets           Ticket[]
+  order             Order[]
 
   scanToken   ScanToken?
 }
@@ -107,14 +108,15 @@ model Order {
 }
 
 model Ticket {
-  id        String   @id @default(uuid())
-  qrCode    String   @unique
-  usedAt    DateTime?
-  orderId   String
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  eventId   String
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  id            String    @id @default(uuid())
+  qrCode        String    @unique
+  usedAt        DateTime?
+  isPaperTicket Boolean   @default(false)
+  orderId       String
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  eventId       String
+  event         Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
 }
 
 model Session {

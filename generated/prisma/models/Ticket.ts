@@ -28,6 +28,7 @@ export type TicketMinAggregateOutputType = {
   id: string | null
   qrCode: string | null
   usedAt: Date | null
+  isPaperTicket: boolean | null
   orderId: string | null
   eventId: string | null
   createdAt: Date | null
@@ -37,6 +38,7 @@ export type TicketMaxAggregateOutputType = {
   id: string | null
   qrCode: string | null
   usedAt: Date | null
+  isPaperTicket: boolean | null
   orderId: string | null
   eventId: string | null
   createdAt: Date | null
@@ -46,6 +48,7 @@ export type TicketCountAggregateOutputType = {
   id: number
   qrCode: number
   usedAt: number
+  isPaperTicket: number
   orderId: number
   eventId: number
   createdAt: number
@@ -57,6 +60,7 @@ export type TicketMinAggregateInputType = {
   id?: true
   qrCode?: true
   usedAt?: true
+  isPaperTicket?: true
   orderId?: true
   eventId?: true
   createdAt?: true
@@ -66,6 +70,7 @@ export type TicketMaxAggregateInputType = {
   id?: true
   qrCode?: true
   usedAt?: true
+  isPaperTicket?: true
   orderId?: true
   eventId?: true
   createdAt?: true
@@ -75,6 +80,7 @@ export type TicketCountAggregateInputType = {
   id?: true
   qrCode?: true
   usedAt?: true
+  isPaperTicket?: true
   orderId?: true
   eventId?: true
   createdAt?: true
@@ -157,6 +163,7 @@ export type TicketGroupByOutputType = {
   id: string
   qrCode: string
   usedAt: Date | null
+  isPaperTicket: boolean
   orderId: string
   eventId: string
   createdAt: Date
@@ -187,6 +194,7 @@ export type TicketWhereInput = {
   id?: Prisma.StringFilter<"Ticket"> | string
   qrCode?: Prisma.StringFilter<"Ticket"> | string
   usedAt?: Prisma.DateTimeNullableFilter<"Ticket"> | Date | string | null
+  isPaperTicket?: Prisma.BoolFilter<"Ticket"> | boolean
   orderId?: Prisma.StringFilter<"Ticket"> | string
   eventId?: Prisma.StringFilter<"Ticket"> | string
   createdAt?: Prisma.DateTimeFilter<"Ticket"> | Date | string
@@ -198,6 +206,7 @@ export type TicketOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   qrCode?: Prisma.SortOrder
   usedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isPaperTicket?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -212,6 +221,7 @@ export type TicketWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.TicketWhereInput[]
   NOT?: Prisma.TicketWhereInput | Prisma.TicketWhereInput[]
   usedAt?: Prisma.DateTimeNullableFilter<"Ticket"> | Date | string | null
+  isPaperTicket?: Prisma.BoolFilter<"Ticket"> | boolean
   orderId?: Prisma.StringFilter<"Ticket"> | string
   eventId?: Prisma.StringFilter<"Ticket"> | string
   createdAt?: Prisma.DateTimeFilter<"Ticket"> | Date | string
@@ -223,6 +233,7 @@ export type TicketOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   qrCode?: Prisma.SortOrder
   usedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isPaperTicket?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -238,6 +249,7 @@ export type TicketScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Ticket"> | string
   qrCode?: Prisma.StringWithAggregatesFilter<"Ticket"> | string
   usedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
+  isPaperTicket?: Prisma.BoolWithAggregatesFilter<"Ticket"> | boolean
   orderId?: Prisma.StringWithAggregatesFilter<"Ticket"> | string
   eventId?: Prisma.StringWithAggregatesFilter<"Ticket"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Ticket"> | Date | string
@@ -247,6 +259,7 @@ export type TicketCreateInput = {
   id?: string
   qrCode: string
   usedAt?: Date | string | null
+  isPaperTicket?: boolean
   createdAt?: Date | string
   order: Prisma.OrderCreateNestedOneWithoutTicketsInput
   event: Prisma.EventCreateNestedOneWithoutTicketsInput
@@ -256,6 +269,7 @@ export type TicketUncheckedCreateInput = {
   id?: string
   qrCode: string
   usedAt?: Date | string | null
+  isPaperTicket?: boolean
   orderId: string
   eventId: string
   createdAt?: Date | string
@@ -265,6 +279,7 @@ export type TicketUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   qrCode?: Prisma.StringFieldUpdateOperationsInput | string
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPaperTicket?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   order?: Prisma.OrderUpdateOneRequiredWithoutTicketsNestedInput
   event?: Prisma.EventUpdateOneRequiredWithoutTicketsNestedInput
@@ -274,6 +289,7 @@ export type TicketUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   qrCode?: Prisma.StringFieldUpdateOperationsInput | string
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPaperTicket?: Prisma.BoolFieldUpdateOperationsInput | boolean
   orderId?: Prisma.StringFieldUpdateOperationsInput | string
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -283,6 +299,7 @@ export type TicketCreateManyInput = {
   id?: string
   qrCode: string
   usedAt?: Date | string | null
+  isPaperTicket?: boolean
   orderId: string
   eventId: string
   createdAt?: Date | string
@@ -292,6 +309,7 @@ export type TicketUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   qrCode?: Prisma.StringFieldUpdateOperationsInput | string
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPaperTicket?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -299,6 +317,7 @@ export type TicketUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   qrCode?: Prisma.StringFieldUpdateOperationsInput | string
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPaperTicket?: Prisma.BoolFieldUpdateOperationsInput | boolean
   orderId?: Prisma.StringFieldUpdateOperationsInput | string
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -318,6 +337,7 @@ export type TicketCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   qrCode?: Prisma.SortOrder
   usedAt?: Prisma.SortOrder
+  isPaperTicket?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -327,6 +347,7 @@ export type TicketMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   qrCode?: Prisma.SortOrder
   usedAt?: Prisma.SortOrder
+  isPaperTicket?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -336,6 +357,7 @@ export type TicketMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   qrCode?: Prisma.SortOrder
   usedAt?: Prisma.SortOrder
+  isPaperTicket?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -429,6 +451,7 @@ export type TicketCreateWithoutEventInput = {
   id?: string
   qrCode: string
   usedAt?: Date | string | null
+  isPaperTicket?: boolean
   createdAt?: Date | string
   order: Prisma.OrderCreateNestedOneWithoutTicketsInput
 }
@@ -437,6 +460,7 @@ export type TicketUncheckedCreateWithoutEventInput = {
   id?: string
   qrCode: string
   usedAt?: Date | string | null
+  isPaperTicket?: boolean
   orderId: string
   createdAt?: Date | string
 }
@@ -474,6 +498,7 @@ export type TicketScalarWhereInput = {
   id?: Prisma.StringFilter<"Ticket"> | string
   qrCode?: Prisma.StringFilter<"Ticket"> | string
   usedAt?: Prisma.DateTimeNullableFilter<"Ticket"> | Date | string | null
+  isPaperTicket?: Prisma.BoolFilter<"Ticket"> | boolean
   orderId?: Prisma.StringFilter<"Ticket"> | string
   eventId?: Prisma.StringFilter<"Ticket"> | string
   createdAt?: Prisma.DateTimeFilter<"Ticket"> | Date | string
@@ -483,6 +508,7 @@ export type TicketCreateWithoutOrderInput = {
   id?: string
   qrCode: string
   usedAt?: Date | string | null
+  isPaperTicket?: boolean
   createdAt?: Date | string
   event: Prisma.EventCreateNestedOneWithoutTicketsInput
 }
@@ -491,6 +517,7 @@ export type TicketUncheckedCreateWithoutOrderInput = {
   id?: string
   qrCode: string
   usedAt?: Date | string | null
+  isPaperTicket?: boolean
   eventId: string
   createdAt?: Date | string
 }
@@ -525,6 +552,7 @@ export type TicketCreateManyEventInput = {
   id?: string
   qrCode: string
   usedAt?: Date | string | null
+  isPaperTicket?: boolean
   orderId: string
   createdAt?: Date | string
 }
@@ -533,6 +561,7 @@ export type TicketUpdateWithoutEventInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   qrCode?: Prisma.StringFieldUpdateOperationsInput | string
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPaperTicket?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   order?: Prisma.OrderUpdateOneRequiredWithoutTicketsNestedInput
 }
@@ -541,6 +570,7 @@ export type TicketUncheckedUpdateWithoutEventInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   qrCode?: Prisma.StringFieldUpdateOperationsInput | string
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPaperTicket?: Prisma.BoolFieldUpdateOperationsInput | boolean
   orderId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -549,6 +579,7 @@ export type TicketUncheckedUpdateManyWithoutEventInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   qrCode?: Prisma.StringFieldUpdateOperationsInput | string
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPaperTicket?: Prisma.BoolFieldUpdateOperationsInput | boolean
   orderId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -557,6 +588,7 @@ export type TicketCreateManyOrderInput = {
   id?: string
   qrCode: string
   usedAt?: Date | string | null
+  isPaperTicket?: boolean
   eventId: string
   createdAt?: Date | string
 }
@@ -565,6 +597,7 @@ export type TicketUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   qrCode?: Prisma.StringFieldUpdateOperationsInput | string
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPaperTicket?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   event?: Prisma.EventUpdateOneRequiredWithoutTicketsNestedInput
 }
@@ -573,6 +606,7 @@ export type TicketUncheckedUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   qrCode?: Prisma.StringFieldUpdateOperationsInput | string
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPaperTicket?: Prisma.BoolFieldUpdateOperationsInput | boolean
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -581,6 +615,7 @@ export type TicketUncheckedUpdateManyWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   qrCode?: Prisma.StringFieldUpdateOperationsInput | string
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPaperTicket?: Prisma.BoolFieldUpdateOperationsInput | boolean
   eventId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -591,6 +626,7 @@ export type TicketSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   id?: boolean
   qrCode?: boolean
   usedAt?: boolean
+  isPaperTicket?: boolean
   orderId?: boolean
   eventId?: boolean
   createdAt?: boolean
@@ -602,6 +638,7 @@ export type TicketSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   qrCode?: boolean
   usedAt?: boolean
+  isPaperTicket?: boolean
   orderId?: boolean
   eventId?: boolean
   createdAt?: boolean
@@ -613,6 +650,7 @@ export type TicketSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   qrCode?: boolean
   usedAt?: boolean
+  isPaperTicket?: boolean
   orderId?: boolean
   eventId?: boolean
   createdAt?: boolean
@@ -624,12 +662,13 @@ export type TicketSelectScalar = {
   id?: boolean
   qrCode?: boolean
   usedAt?: boolean
+  isPaperTicket?: boolean
   orderId?: boolean
   eventId?: boolean
   createdAt?: boolean
 }
 
-export type TicketOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "qrCode" | "usedAt" | "orderId" | "eventId" | "createdAt", ExtArgs["result"]["ticket"]>
+export type TicketOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "qrCode" | "usedAt" | "isPaperTicket" | "orderId" | "eventId" | "createdAt", ExtArgs["result"]["ticket"]>
 export type TicketInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
   event?: boolean | Prisma.EventDefaultArgs<ExtArgs>
@@ -653,6 +692,7 @@ export type $TicketPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: string
     qrCode: string
     usedAt: Date | null
+    isPaperTicket: boolean
     orderId: string
     eventId: string
     createdAt: Date
@@ -1084,6 +1124,7 @@ export interface TicketFieldRefs {
   readonly id: Prisma.FieldRef<"Ticket", 'String'>
   readonly qrCode: Prisma.FieldRef<"Ticket", 'String'>
   readonly usedAt: Prisma.FieldRef<"Ticket", 'DateTime'>
+  readonly isPaperTicket: Prisma.FieldRef<"Ticket", 'Boolean'>
   readonly orderId: Prisma.FieldRef<"Ticket", 'String'>
   readonly eventId: Prisma.FieldRef<"Ticket", 'String'>
   readonly createdAt: Prisma.FieldRef<"Ticket", 'DateTime'>

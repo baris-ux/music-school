@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 
 import CopyButton from "./CopyButton";
+import GeneratePaperTicketsButton from "./GeneratePaperTicketsButton";
 
 function formatDateTimeLocal(date: Date | string) {
   const d = new Date(date);
@@ -135,7 +136,10 @@ export default async function EventsPage() {
 
   const events = await prisma.event.findMany({
     orderBy: { startAt: "asc" },
-    include: { scanToken: true },
+    include: {
+      scanToken: true,
+      tickets: { select: { isPaperTicket: true } },
+    },
   });
 
   const baseUrl = "https://music-academy-three.vercel.app";
@@ -271,6 +275,10 @@ export default async function EventsPage() {
             const isExpired = event.scanToken
               ? event.scanToken.expiresAt < new Date()
               : false;
+            const onlineCount = event.tickets.filter((t) => !t.isPaperTicket).length;
+            const paperCount = event.tickets.filter((t) => t.isPaperTicket).length;
+            const remaining = event.capacity - event.tickets.length;
+            const isFull = remaining <= 0;
 
             return (
               <div
@@ -304,8 +312,7 @@ export default async function EventsPage() {
                       )}
                     </p>
                     <p className="text-sm text-slate-700">
-                      Prix : {(event.price / 100).toFixed(2)} € • Capacité :{" "}
-                      {event.capacity}
+                      Prix : {(event.price / 100).toFixed(2)} €
                     </p>
                   </div>
 
@@ -318,6 +325,29 @@ export default async function EventsPage() {
                       Supprimer
                     </button>
                   </form>
+                </div>
+
+                {/* Billetterie */}
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+                  <p className="text-sm font-medium text-slate-900">Billetterie</p>
+                  <div className="grid grid-cols-3 gap-3 text-center">
+                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2">
+                      <p className="text-xs text-slate-500">En ligne</p>
+                      <p className="text-lg font-bold text-slate-900">{onlineCount}</p>
+                    </div>
+                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2">
+                      <p className="text-xs text-slate-500">Papier</p>
+                      <p className="text-lg font-bold text-slate-900">{paperCount}</p>
+                    </div>
+                    <div className={`rounded-lg border px-3 py-2 ${isFull ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}`}>
+                      <p className="text-xs text-slate-500">Restant</p>
+                      <p className={`text-lg font-bold ${isFull ? "text-red-600" : "text-green-600"}`}>{remaining}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 mb-2">Générer des billets papier à imprimer</p>
+                    <GeneratePaperTicketsButton eventId={event.id} remaining={remaining} />
+                  </div>
                 </div>
 
                 {/* Lien de scan */}

@@ -109,7 +109,8 @@ export const StudentScalarFieldEnum = {
   balance: 'balance',
   paymentMode: 'paymentMode',
   pendingPaymentMode: 'pendingPaymentMode',
-  paymentRequested: 'paymentRequested'
+  paymentRequested: 'paymentRequested',
+  paymentMethodDeclared: 'paymentMethodDeclared'
 } as const
 
 export type StudentScalarFieldEnum = (typeof StudentScalarFieldEnum)[keyof typeof StudentScalarFieldEnum]
@@ -167,6 +168,7 @@ export const TicketScalarFieldEnum = {
   id: 'id',
   qrCode: 'qrCode',
   usedAt: 'usedAt',
+  isPaperTicket: 'isPaperTicket',
   orderId: 'orderId',
   eventId: 'eventId',
   createdAt: 'createdAt'
