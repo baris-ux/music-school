@@ -29,7 +29,7 @@ async function confirmPayment(formData: FormData) {
 
   await prisma.student.update({
     where: { id },
-    data: { balance: 0, paymentRequested: false },
+    data: { balance: 0, paymentRequested: false, paymentMethodDeclared: null },
   });
 
   revalidatePath("/admin/students");
@@ -45,7 +45,7 @@ async function rejectPayment(formData: FormData) {
 
   await prisma.student.update({
     where: { id },
-    data: { paymentRequested: false },
+    data: { paymentRequested: false, paymentMethodDeclared: null },
   });
 
   revalidatePath("/admin/students");
@@ -199,13 +199,20 @@ export default async function StudentsPage() {
                   <div className="flex items-center gap-2">
                     {student.paymentRequested && (
                       <>
+                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                          student.paymentMethodDeclared === "CASH"
+                            ? "bg-slate-100 text-slate-700"
+                            : "bg-blue-50 text-blue-700"
+                        }`}>
+                          {student.paymentMethodDeclared === "CASH" ? "Espèces" : "Virement"}
+                        </span>
                         <form action={confirmPayment}>
                           <input type="hidden" name="id" value={student.id} />
                           <button
                             type="submit"
                             className="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-green-700 transition hover:bg-green-50 hover:text-green-800"
                           >
-                            Confirmer le paiement
+                            Confirmer
                           </button>
                         </form>
                         <form action={rejectPayment}>
@@ -214,7 +221,7 @@ export default async function StudentsPage() {
                             type="submit"
                             className="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 hover:text-red-800"
                           >
-                            Refuser le virement
+                            Refuser
                           </button>
                         </form>
                       </>

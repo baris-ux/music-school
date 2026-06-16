@@ -67,9 +67,12 @@ export default async function StudentPage() {
     const session = await getSession();
     if (!session) redirect("/login");
 
+    const method = String(formData.get("method") ?? "");
+    if (!["CASH", "TRANSFER"].includes(method)) return;
+
     await prisma.student.update({
       where: { userId: session.userId },
-      data: { paymentRequested: true },
+      data: { paymentRequested: true, paymentMethodDeclared: method },
     });
 
     revalidatePath("/student");
@@ -259,17 +262,29 @@ export default async function StudentPage() {
 
             {student.paymentRequested ? (
               <div className="mt-3 rounded-lg bg-green-100 px-3 py-2 text-sm text-green-800 font-medium">
-                Virement déclaré — en attente de confirmation par l'administration.
+                Paiement déclaré ({student.paymentMethodDeclared === "CASH" ? "en espèces" : "par virement"}) — en attente de confirmation par l'administration.
               </div>
             ) : (
-              <form action={requestPayment} className="mt-3">
-                <button
-                  type="submit"
-                  className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
-                >
-                  J'ai effectué mon virement
-                </button>
-              </form>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <form action={requestPayment}>
+                  <input type="hidden" name="method" value="CASH" />
+                  <button
+                    type="submit"
+                    className="cursor-pointer rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 transition"
+                  >
+                    J'ai payé en espèces
+                  </button>
+                </form>
+                <form action={requestPayment}>
+                  <input type="hidden" name="method" value="TRANSFER" />
+                  <button
+                    type="submit"
+                    className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
+                  >
+                    J'ai effectué un virement
+                  </button>
+                </form>
+              </div>
             )}
           </div>
         )}

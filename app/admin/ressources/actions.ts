@@ -21,7 +21,7 @@ export async function uploadResource(
     return { error: "Seuls les fichiers PDF sont acceptés", success: null };
   }
   const blob = await put(file.name, file, {
-    access: "private",
+    access: "public",
     contentType: "application/pdf",
   });
   await prisma.resource.create({

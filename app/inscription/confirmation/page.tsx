@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useLang } from "@/app/context/LangContext";
 import { translations } from "@/lib/translations";
 
@@ -15,12 +16,12 @@ export default function ConfirmationPage() {
           <h1 className="text-2xl font-semibold text-slate-950">{t.title}</h1>
           <p className="mt-3 text-sm text-slate-700">{t.message}</p>
           <p className="mt-2 text-sm text-slate-500">{t.email_sent}</p>
-          <a
+          <Link
             href="/"
             className="mt-6 inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
           >
             {t.back_home}
-          </a>
+          </Link>
         </div>
       </div>
     </div>

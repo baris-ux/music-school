@@ -27,26 +27,6 @@ export default function ScanClient({ scanToken }: { scanToken: string }) {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const isProcessing = useRef(false);
 
-  useEffect(() => {
-    const scanner = new Html5Qrcode("qr-reader");
-    scannerRef.current = scanner;
-
-    scanner.start(
-      { facingMode: "environment" }, // caméra arrière
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      (decodedText) => {
-        if (!isProcessing.current) {
-          handleScan(decodedText);
-        }
-      },
-      () => {} // erreurs de lecture ignorées (normal pendant le scan)
-    );
-
-    return () => {
-      scanner.stop().catch(() => {});
-    };
-  }, []);
-
   async function handleScan(qrCode: string) {
     if (isProcessing.current) return;
     isProcessing.current = true;
@@ -84,6 +64,27 @@ export default function ScanClient({ scanToken }: { scanToken: string }) {
       isProcessing.current = false;
     }, 3000);
   }
+
+  useEffect(() => {
+    const scanner = new Html5Qrcode("qr-reader");
+    scannerRef.current = scanner;
+
+    scanner.start(
+      { facingMode: "environment" }, // caméra arrière
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      (decodedText) => {
+        if (!isProcessing.current) {
+          handleScan(decodedText);
+        }
+      },
+      () => {} // erreurs de lecture ignorées (normal pendant le scan)
+    );
+
+    return () => {
+      scanner.stop().catch(() => {});
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="space-y-4">

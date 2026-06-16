@@ -59,7 +59,7 @@ export const translations = {
       message: "Message (optionnel)",
       message_placeholder: "Niveau, questions...",
       submit: "Envoyer ma demande",
-      gdpr_consent: "J'accepte que mes données personnelles (nom, prénom, adresse e-mail) soient traitées dans le cadre de la gestion de mon inscription et de mes cours, conformément au RGPD.",
+      gdpr_consent: "J'accepte que mes données personnelles (nom, prénom, adresse e-mail, numéro de téléphone) soient traitées par l'école de musique dans le cadre de la gestion de mon inscription et de mes cours, conformément au RGPD (UE) 2016/679. Ces données seront conservées pendant la durée de ma relation avec l'école. Je dispose d'un droit d'accès, de rectification et d'effacement de mes données en contactant l'école. J'ai également le droit d'introduire une réclamation auprès de l'APD (www.autoriteprotectiondonnees.be).",
     },
     events: {
       badge: "École de musique",
@@ -179,7 +179,7 @@ export const translations = {
       message: "Mesaj (isteğe bağlı)",
       message_placeholder: "Seviye, sorular...",
       submit: "Talebimi gönder",
-      gdpr_consent: "Kaydım ve derslerimin yönetimi kapsamında kişisel verilerimin (ad, soyad, e-posta adresi) GDPR uyarınca işlenmesini kabul ediyorum.",
+      gdpr_consent: "Kaydım ve derslerimin yönetimi kapsamında kişisel verilerimin (ad, soyad, e-posta adresi, telefon numarası) GDPR (AB) 2016/679 uyarınca müzik okulu tarafından işlenmesini kabul ediyorum. Bu veriler, okulla ilişkim süresince saklanacaktır. Verilerime erişim, düzeltme ve silme hakkına sahibim. Ayrıca APD'ye (www.autoriteprotectiondonnees.be) şikayette bulunma hakkım mevcuttur.",
     },
     events: {
       badge: "Müzik okulu",
