@@ -16,10 +16,10 @@ export async function resetPassword(
   const confirm = String(formData.get("confirm") ?? "");
 
   if (!token) return { error: "Token invalide.", success: null };
-  const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\-_]).{8,}$/;
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\-_]).{12,}$/;
   if (!passwordRegex.test(password)) {
     return {
-      error: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial (!@#$%^&*-_)",
+      error: "Le mot de passe doit contenir au moins 12 caractères, une majuscule, un chiffre et un caractère spécial (!@#$%^&*-_)",
       success: null,
     };
   }

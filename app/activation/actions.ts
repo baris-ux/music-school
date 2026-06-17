@@ -17,10 +17,10 @@ export async function activerCompte(formData: FormData) {
     throw new Error("Les mots de passe ne correspondent pas");
   }
   
-  const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\-_]).{8,}$/;
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\-_]).{12,}$/;
   if (!passwordRegex.test(password)) {
     throw new Error(
-      "Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial (!@#$%^&*-_)"
+      "Le mot de passe doit contenir au moins 12 caractères, une majuscule, un chiffre et un caractère spécial (!@#$%^&*-_)"
     );
   }
 
