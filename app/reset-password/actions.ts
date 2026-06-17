@@ -16,13 +16,6 @@ export async function resetPassword(
   const confirm = String(formData.get("confirm") ?? "");
 
   if (!token) return { error: "Token invalide.", success: null };
-  const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\-_]).{12,}$/;
-  if (!passwordRegex.test(password)) {
-    return {
-      error: "Le mot de passe doit contenir au moins 12 caractères, une majuscule, un chiffre et un caractère spécial (!@#$%^&*-_)",
-      success: null,
-    };
-  }
   if (password !== confirm) return { error: "Les mots de passe ne correspondent pas.", success: null };
 
   const user = await prisma.user.findFirst({
@@ -33,6 +26,15 @@ export async function resetPassword(
   });
 
   if (!user) return { error: "Lien invalide ou expiré.", success: null };
+
+  const minLength = user.role === "ADMIN" ? 16 : 12;
+  const passwordRegex = new RegExp(`^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\\-_]).{${minLength},}$`);
+  if (!passwordRegex.test(password)) {
+    return {
+      error: `Le mot de passe doit contenir au moins ${minLength} caractères, une majuscule, un chiffre et un caractère spécial (!@#$%^&*-_)`,
+      success: null,
+    };
+  }
 
   const passwordHash = await argon2.hash(password);
 
