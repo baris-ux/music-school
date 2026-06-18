@@ -49,6 +49,7 @@ export default function Navbar() {
           <Link href="/contact" className="transition hover:text-slate-900">{t.contact}</Link>
           <Link href="/inscription" className="transition hover:text-slate-900">{t.inscription}</Link>
           <Link href="/tarifs" className="transition hover:text-slate-900">{t.pricing}</Link>
+          <Link href="/confidentialite" className="transition hover:text-slate-900">{t.privacy}</Link>
         </nav>
 
         <div className="flex items-center gap-3">

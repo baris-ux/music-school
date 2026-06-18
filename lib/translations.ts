@@ -7,6 +7,7 @@ export const translations = {
       inscription: "Inscription",
       login: "Se connecter",
       pricing: "Tarifs",
+      privacy: "Confidentialité",
     },
     home: {
       title: "Cours de musique, clairs et accessibles",
@@ -128,6 +129,7 @@ export const translations = {
       inscription: "Kayıt",
       login: "Giriş yap",
       pricing: "Ücretler",
+      privacy: "Gizlilik",
     },
     home: {
       title: "Net ve erişilebilir müzik dersleri",
