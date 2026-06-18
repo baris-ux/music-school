@@ -5,7 +5,8 @@ export default function ConfidentialitePage() {
   return (
     <>
       <Navbar />
-      <main className="max-w-3xl mx-auto px-6 py-16 space-y-10 text-gray-800">
+      <main className="min-h-screen bg-white">
+        <div className="max-w-3xl mx-auto px-6 py-16 space-y-10 text-gray-800">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Politique de confidentialité</h1>
           <p className="text-sm text-gray-500">Conformément au RGPD (UE) 2016/679</p>
@@ -93,6 +94,7 @@ export default function ConfidentialitePage() {
             </a>
           </p>
         </section>
+        </div>
       </main>
       <Footer />
     </>
