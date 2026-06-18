@@ -62,8 +62,11 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="text-center text-sm py-4 text-gray-500 border-t border-gray-800">
-        © {new Date().getFullYear()} École de musique — {t.rights}
+      <div className="text-center text-sm py-4 text-gray-500 border-t border-gray-800 space-x-4">
+        <span>© {new Date().getFullYear()} École de musique — {t.rights}</span>
+        <a href="/confidentialite" className="hover:text-white transition underline">
+          {t.privacy}
+        </a>
       </div>
     </footer>
   );

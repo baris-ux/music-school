@@ -86,6 +86,7 @@ export const translations = {
       contact: "Contact",
       follow: "Suivez-nous",
       rights: "Tous droits réservés",
+      privacy: "Politique de confidentialité",
     },
     pricing: {
       title: "Tarifs",
@@ -206,6 +207,7 @@ export const translations = {
       contact: "İletişim",
       follow: "Bizi takip edin",
       rights: "Tüm hakları saklıdır",
+      privacy: "Gizlilik Politikası",
     },
     pricing: {
       title: "Ücretler",
