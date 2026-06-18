@@ -2,7 +2,8 @@
 
 import { useState, useMemo, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { saveAttendance, AttendanceStatus, AttendanceRecord } from "./actions";
+import { saveAttendance, AttendanceRecord } from "./actions";
+import type { AttendanceStatus } from "@/generated/prisma/enums";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type Student = {
@@ -35,8 +36,10 @@ type Props = {
 };
 
 // ── Config statuts ─────────────────────────────────────────────────────────
+type DisplayStatus = "PRESENT" | "ABSENT";
+
 const STATUS_CONFIG: Record<
-  AttendanceStatus,
+  DisplayStatus,
   { label: string; icon: string; colors: string; badge: string; dot: string }
 > = {
   PRESENT: {
@@ -55,7 +58,7 @@ const STATUS_CONFIG: Record<
   },
 };
 
-const ALL_STATUSES: AttendanceStatus[] = ["PRESENT", "ABSENT"];
+const ALL_STATUSES: DisplayStatus[] = ["PRESENT", "ABSENT"];
 
 // ── Composant ligne étudiant ───────────────────────────────────────────────
 function StudentRow({
@@ -68,13 +71,15 @@ function StudentRow({
   onChange: (studentId: string, status: AttendanceStatus) => void;
 }) {
   const initials = `${student.firstName[0]}${student.lastName[0]}`.toUpperCase();
-  const cfg = status ? STATUS_CONFIG[status] : null;
+  const displayStatus: DisplayStatus | undefined =
+    status === "PRESENT" || status === "ABSENT" ? status : undefined;
+  const cfg = displayStatus ? STATUS_CONFIG[displayStatus] : null;
 
   return (
     <div
       className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-150 ${
         cfg
-          ? `border-${status === "PRESENT" ? "green" : "red"}-200 bg-${status === "PRESENT" ? "green" : "red"}-50/40`
+          ? `border-${displayStatus === "PRESENT" ? "green" : "red"}-200 bg-${displayStatus === "PRESENT" ? "green" : "red"}-50/40`
           : "border-gray-200 bg-white"
       }`}
     >
@@ -82,7 +87,7 @@ function StudentRow({
       <div
         className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold text-white shrink-0 transition-colors duration-150 ${
           cfg
-            ? status === "PRESENT"
+            ? displayStatus === "PRESENT"
               ? "bg-green-500"
               : "bg-red-500"
             : "bg-gray-300"
@@ -157,7 +162,8 @@ export default function AttendanceClient({ session, enrollments }: Props) {
     const counts = { PRESENT: 0, ABSENT: 0, pending: 0 };
     students.forEach((s) => {
       const st = attendance[s.id];
-      if (st) counts[st]++;
+      if (st === "PRESENT") counts.PRESENT++;
+      else if (st === "ABSENT") counts.ABSENT++;
       else counts.pending++;
     });
     return counts;
@@ -265,7 +271,7 @@ export default function AttendanceClient({ session, enrollments }: Props) {
                 <p className={`text-2xl font-bold ${
                   s === "PRESENT" ? "text-green-600" : "text-red-600"
                 }`}>
-                  {stats[s]}
+                  {s === "PRESENT" ? stats.PRESENT : stats.ABSENT}
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5 font-medium">{cfg.label}</p>
               </div>
@@ -306,7 +312,7 @@ export default function AttendanceClient({ session, enrollments }: Props) {
             <option value="pending">Non saisis ({stats.pending})</option>
             {ALL_STATUSES.map((s) => (
               <option key={s} value={s}>
-                {STATUS_CONFIG[s].label} ({stats[s]})
+                {STATUS_CONFIG[s].label} ({s === "PRESENT" ? stats.PRESENT : stats.ABSENT})
               </option>
             ))}
           </select>

@@ -2,7 +2,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export type AttendanceStatus = "PRESENT" | "ABSENT";
+import type { AttendanceStatus } from "@/generated/prisma/enums";
 export type AttendanceRecord = {
   studentId: string;
   status: AttendanceStatus;
