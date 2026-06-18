@@ -53,23 +53,9 @@ const STATUS_CONFIG: Record<
     badge: "bg-red-100 text-red-700 border border-red-200",
     dot: "bg-red-500",
   },
-  LATE: {
-    label: "Retard",
-    icon: "⏱",
-    colors: "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100",
-    badge: "bg-amber-100 text-amber-700 border border-amber-200",
-    dot: "bg-amber-500",
-  },
-  EXCUSED: {
-    label: "Excusé",
-    icon: "📄",
-    colors: "border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100",
-    badge: "bg-indigo-100 text-indigo-700 border border-indigo-200",
-    dot: "bg-indigo-500",
-  },
 };
 
-const ALL_STATUSES: AttendanceStatus[] = ["PRESENT", "ABSENT", "LATE", "EXCUSED"];
+const ALL_STATUSES: AttendanceStatus[] = ["PRESENT", "ABSENT"];
 
 // ── Composant ligne étudiant ───────────────────────────────────────────────
 function StudentRow({
@@ -88,7 +74,7 @@ function StudentRow({
     <div
       className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-150 ${
         cfg
-          ? `border-${status === "PRESENT" ? "green" : status === "ABSENT" ? "red" : status === "LATE" ? "amber" : "indigo"}-200 bg-${status === "PRESENT" ? "green" : status === "ABSENT" ? "red" : status === "LATE" ? "amber" : "indigo"}-50/40`
+          ? `border-${status === "PRESENT" ? "green" : "red"}-200 bg-${status === "PRESENT" ? "green" : "red"}-50/40`
           : "border-gray-200 bg-white"
       }`}
     >
@@ -98,11 +84,7 @@ function StudentRow({
           cfg
             ? status === "PRESENT"
               ? "bg-green-500"
-              : status === "ABSENT"
-              ? "bg-red-500"
-              : status === "LATE"
-              ? "bg-amber-500"
-              : "bg-indigo-500"
+              : "bg-red-500"
             : "bg-gray-300"
         }`}
       >
@@ -141,11 +123,7 @@ function StudentRow({
                 isActive
                   ? s === "PRESENT"
                     ? "bg-green-500 border-green-500 text-white"
-                    : s === "ABSENT"
-                    ? "bg-red-500 border-red-500 text-white"
-                    : s === "LATE"
-                    ? "bg-amber-500 border-amber-500 text-white"
-                    : "bg-indigo-500 border-indigo-500 text-white"
+                    : "bg-red-500 border-red-500 text-white"
                   : "bg-white border-gray-200 text-gray-400 hover:border-gray-300"
               }`}
             >
@@ -176,7 +154,7 @@ export default function AttendanceClient({ session, enrollments }: Props) {
   const students = enrollments.map((e) => e.student);
 
   const stats = useMemo(() => {
-    const counts = { PRESENT: 0, ABSENT: 0, LATE: 0, EXCUSED: 0, pending: 0 };
+    const counts = { PRESENT: 0, ABSENT: 0, pending: 0 };
     students.forEach((s) => {
       const st = attendance[s.id];
       if (st) counts[st]++;
@@ -279,16 +257,13 @@ export default function AttendanceClient({ session, enrollments }: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {ALL_STATUSES.map((s) => {
             const cfg = STATUS_CONFIG[s];
             return (
               <div key={s} className="bg-white rounded-xl border border-gray-200 p-3 text-center">
                 <p className={`text-2xl font-bold ${
-                  s === "PRESENT" ? "text-green-600"
-                  : s === "ABSENT" ? "text-red-600"
-                  : s === "LATE" ? "text-amber-600"
-                  : "text-indigo-600"
+                  s === "PRESENT" ? "text-green-600" : "text-red-600"
                 }`}>
                   {stats[s]}
                 </p>
