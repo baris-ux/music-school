@@ -57,7 +57,7 @@ describe("activerCompte", () => {
   it("lance une erreur si le mot de passe ne respecte pas les règles", async () => {
     await expect(
       activerCompte(makeFormData({ token: "abc", password: "faible", confirm: "faible" }))
-    ).rejects.toThrow("8 caractères");
+    ).rejects.toThrow("12 caractères");
   });
 
   it("lance une erreur si le token est invalide", async () => {

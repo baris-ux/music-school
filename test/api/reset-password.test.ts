@@ -46,11 +46,12 @@ describe("resetPassword", () => {
   });
 
   it("retourne une erreur si le mot de passe ne respecte pas les règles", async () => {
+    mockFindFirst.mockResolvedValue({ id: "u-1", role: "STUDENT" } as any);
     const result = await resetPassword(
       prevState,
       makeFormData({ token: "abc", password: "faible", confirm: "faible" })
     );
-    expect(result.error).toContain("8 caractères");
+    expect(result.error).toContain("12 caractères");
   });
 
   it("retourne une erreur si les mots de passe ne correspondent pas", async () => {
