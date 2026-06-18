@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import Navbar from "../components/Navbar";
 import InscriptionContent from "./InscriptionContent";
 
+export const dynamic = "force-dynamic";
+
 export default async function InscriptionPage() {
   const cours = await prisma.course.findMany({
     orderBy: { title: "asc" },
