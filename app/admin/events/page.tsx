@@ -142,7 +142,7 @@ export default async function EventsPage() {
     },
   });
 
-  const baseUrl = "https://music-academy-three.vercel.app";
+  const baseUrl = process.env.APP_URL ?? "http://localhost:3000";
 
   return (
     <div className="space-y-8">
